@@ -19,26 +19,21 @@ def graph6(bytes_in):
         for d in data:
             for i in [5, 4, 3, 2, 1, 0]:
                 yield (d >> i) & 1
-    # check for digraph6 data type
-    if(bytes_in[0]!=38):
-        raise Exception("digraph6 characters must start with &")
-    else:
-        bytes_in = bytes_in[1:]
     # subtract 63 from each bit, check for bits that are over 126
     data = [c - 63 for c in bytes_in]
     if any(c > 63 for c in data):
-        raise Exception("digraph6 characters must be in range(63, 127)")
+        raise Exception("graph6 characters must be in range(63, 127)")
     # extract size of graph (n) and remaining bits which hold edge information
     n, data = data_to_n(data)
     # check if we have the correct number of bits
-    nd = (n**2 + 5) // 6
+    nd = (n*(n-1)//2 + 5) // 6
     if len(data) != nd:
-        raise Exception(f"Expected {nd*6} bits and got {len(data) * 6} in digraph6")
+        raise Exception(f"Expected {nd*6} bits and got {len(data) * 6} in graph6")
     # build adjacency matrix    
     a = zeros((n,n),dtype=float)
-    for (i, j), b in zip([(i, j) for i in range(n) for j in range(n)], bits()):
+    for (i, j), b in zip([(i, j) for j in range(1,n) for i in range(j)], bits()):
         if b:
-            a[i,j] = 1
+            a[i,j] = 1; a[j,i] = 1
     # return
     return a
 ###############################################

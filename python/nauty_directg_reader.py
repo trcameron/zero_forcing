@@ -36,7 +36,7 @@ def digraph6(bytes_in):
         raise Exception(f"Expected {nd*6} bits and got {len(data) * 6} in digraph6")
     # build adjacency matrix    
     a = zeros((n,n),dtype=float)
-    for (i, j), b in zip([(i, j) for i in range(n) for j in range(n)], bits()):
+    for (i, j), b in zip([(i, j) for j in range(n) for i in range(n)], bits()):
         if b:
             a[i,j] = 1
     # return
@@ -50,9 +50,6 @@ def main():
         # read input stream
         for line in stdin:
             a = digraph6(bytes(line.rstrip(),'utf-8'))
-            print(a)
-            if(sum(diag(a))>0):
-                quit()
             g = DiGraph(a)
             draw(g,ax=plt.subplot(111))
             plt.show()
