@@ -4,6 +4,9 @@ from numpy import zeros, sum, diag
 from networkx import DiGraph, draw
 from matplotlib import pyplot as plt
 
+###############################################
+###             digraph6                    ###
+###############################################
 def digraph6(bytes_in):
     def data_to_n(data):
         """Read initial one-, four- or eight-unit value from digraph6 integer sequence.

@@ -324,7 +324,7 @@ As mentioned in Section~\ref{sec:intro}, there are many color change rules that 
 The so-called standard zero forcing rule provides an upper bound on the maximum nullity of a graph via Theorem~\ref{thm:max-nul-zero-forcing}.
 The positive semidefinite zero forcing rule provides an upper bound on the maximum positive semidefinite nullity:
 \[
-M_{+}(G) = \max\left\{\nullity{A}\colon A\in S(G),~\forall\lambda\in\sigma(A),~\lambda\geq 0\right\}.
+M_{+}(G) = \max\left\{\nullity{A}\colon A\in\mathcal{S}(G),~\forall\lambda\in\sigma(A),~\lambda\geq 0\right\}.
 \]
 Note that the additional condition on the eigenvalues of $A$, i.e., $\lambda\geq 0$ for all $\lambda\in\sigma(A)$, implies that $A$ must be positive semidefinite. 
 %Furthermore, because the eigenvalues must be non-negative, $M_{+}(G)$ no longer corresponds to the maximum multiplicity of an eigenvalue of a positive semidefinite matrix in $\mathcal{S}(G)$.
@@ -346,7 +346,7 @@ Let $G\in\mathbb{G}$.
 Then, $M_{+}(G)\leq Z_{+}(G)$.
 \end{theorem}
 \begin{proof}
-Let $A\in S(G)$ be positive semidefinite with $\nullity{A}=M_{+}(G)$ and consider a non-zero vector $\textbf{x}\in\null{A}$, which is guaranteed to exist since the max nullity is at least $1$.
+Let $A\in\mathcal{S}(G)$ be positive semidefinite with $\nullity{A}=M_{+}(G)$ and consider a non-zero vector $\textbf{x}\in\null{A}$, which is guaranteed to exist since the max nullity is at least $1$.
 Let $B\subset V(G)$ denote the set of vertices such that $\textbf{x}_{i}=0$, and let $W_{1},\ldots,W_{k}$ denote the vertex sets of the connected components of $G\setminus{B}$.
 For every $i\in\{1,\ldots,k\}$, we claim that no $w\in W_{i}$ can be the only neighbor of a $b\in B$ in $G[W_{i}\cup B]$.
 
@@ -398,9 +398,173 @@ for all (or some) graphs $G\in\mathbb{G}$.
 \end{question}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%								Computation of Max Nullity and Zero-Forcing
+%								Historical Background of the Minimum Rank
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Computation of Max Nullity and Zero-Forcing}
+\section{Historical Background of the Minimum Rank}
+Parter appears to be the first to study the spectral properties of matrices with a given graph; in 1960, he published his investigation of sign symmetric matrices with multiple eigenvalues whose underlying graph is a tree~\cite{Parter1960}.
+
+Recall that a \emph{forest} is an acyclic graph, i.e., a graph with no cycles, and a \emph{tree} is a connected forest. 
+Moreover, given a tree $T$ and a vertex $v\in V(T)$, a \emph{branch} of $T$ at $v$ is a connected component of $T-v$. 
+If $A\in S(T)$, then each branch of $T$ at $v$ determines a principal submatrix of $A$, namely $A[W]$, where $W$ is the vertex set of the branch. 
+The following result is due to Parter~\cite{Parter1960}.
+%%%%%%%%%%%%%%%%
+%					Theorem 3.1	%
+%%%%%%%%%%%%%%%%
+\begin{theorem}~\label{thm:parter}
+Let $T$ be a tree and let $A\in\mathcal{S}(T)$. 
+Then, $\nullity{A}\geq 2$ if and only if there exists a vertex $v\in V(T)$ and at least three branches $T[W_{i}]$ of $T$ at $v$ such that the principal submatrix $A[W_{i}]$ is singular. 
+\end{theorem}
+
+The following result is due to Fiedler~\cite{Fiedler1975}
+%%%%%%%%%%%%%%%%
+%					Theorem 3.2	%
+%%%%%%%%%%%%%%%%
+\begin{theorem}\label{thm:fiedler1}
+Let $T$ be a tree and let $A\in\mathcal{S}(T)$ with $\nullity{A}\geq 2$.
+Then, there exists an $i\in\{1,2,\ldots,n\}$ such that every null vector $\textbf{x}=[x_{i}]$ has $x_{i}=0$.
+\end{theorem}
+
+An index $i\in\{1,2,\ldots,n\}$ with the property that every eigenvector of $A$ corresponding to an eigenvalue $\lambda$ has its $i$th coordinate zero is known as a \emph{Fiedler index} of $A$ corresponding to $\lambda$. 
+
+In~\cite{Fiedler1975}, Fiedler also showed that one can often determine the location of an eigenvalue $\lambda$ of $A\in\mathcal{S}(T)$ among the ordering of its eigenvalues from an eigenvector of $A$ corresponding to $\lambda$.
+%%%%%%%%%%%%%%%%
+%					Theorem 3.3	%
+%%%%%%%%%%%%%%%%
+\begin{theorem}\label{thm:fiedler2}
+Let $T$ be a tree, $A\in\mathcal{S}(A)$, and $\textbf{y}=[y_{i}]$ be an eigenvector corresponding to an eigenvalue $\lambda$.
+Let $p$ be the number of edges $ij\in E(T)$ such that $a_{ij}y_{i}y_{j}<0$, $q$ the number of edges $ij\in E(T)$ such that $a_{ij}y_{i}y_{j}>0$, and $r$ the number of coordinates of $\textbf{y}$ that are zero. 
+If there does not exist an index $i$ such that $y_{i}=0$ and $y_{j}=0$ for all $j$ adjacent to $i$ in $T$, then there are $p+r$ eigenvalues of $A$ greater than $\lambda$ and $q+r$ eigenvalues of $A$ less than $\lambda$ (counting multiplicity). 
+\end{theorem}
+
+For example, consider the tree graph shown in Figure~\ref{fig:tree-graph}.
+The adjacency matrix of this graph is
+\[
+A = \begin{bmatrix}
+	0 & 1 & 0 & 0  & 0 & 0 \\
+	1 & 0 & 1 & 0 & 1 & 0 \\
+	0 & 1 & 0 & 0 & 0 & 0 \\
+	0 & 0 & 0 & 0 & 1 & 0 \\
+	0 & 1 & 0 & 1 & 0 & 1 \\
+	0 & 0 & 0 & 0 & 1 & 0 \\
+	\end{bmatrix}
+\]
+and has spectrum $\sigma(A) = \{-2,2,-1,1,0,0\}$. 
+To illustrate Theorem~\ref{thm:parter}, note that there are three branches of the vertex $2$, namely $\{1\}$, $\{3\}$, and $\{4,5,6\}$, with corresponding principal submatrix of $A$ that is singular. 
+A similar argument can be made for the branches of the vertex $5$.
+Moreover, the $\kernel{A}$ is spanned by the following basis vectors
+\begin{align*}
+&
+\begin{bmatrix}
+0 & 0 & 0 & -1 & 0 & 1 \\
+\end{bmatrix}^{T}
+\\
+&
+\begin{bmatrix}
+-1 & 0 & 1 & 0 & 0 & 0 \\
+\end{bmatrix}^{T}
+\end{align*}
+Hence, every null vector of $A$ has a zero in the index $2$ and $5$, which illustrates Theorem~\ref{thm:fiedler1}.
+Finally, note the following eigenvalue-eigenvector pairs for the matrix $A$:
+\begin{align*}
+\lambda = -2,~&~\textbf{v} = \begin{bmatrix}-1 & 2 & -1 & 1 & -2 & 1 \end{bmatrix}^{T}, \\
+\lambda = 2,~&~\textbf{v} = \begin{bmatrix} 1 & 2 & 1 & 1 & 2 & 1 \end{bmatrix}^{T}, \\
+\lambda = -1,~&~\textbf{v} = \begin{bmatrix} 1 & -1 & 1 & 1 & -1 & 1 \end{bmatrix}^{T}, \\
+\lambda = 1,~&~\textbf{v} = \begin{bmatrix} -1 & -1 & -1 & 1 & 1 & 1 \end{bmatrix}^{T}. \\
+\end{align*}
+Note that Theorem~\ref{thm:fiedler2} holds for each of the eigenvalue-eigenvector pairs since none of the eigenvectors do not have any zero elements. 
+For instance, every entry of the eigenvector associated with $\lambda = 2$ is positive. 
+Hence, there are $5$ (total number of edges) eigenvalues of $A$ less than $2$ (counting multiplicity). 
+For the eigenvector associated with $\lambda = -1$, we have $p=4$ (corresponding to edges $\{1,2\}$, $\{2,3\}$, $\{4,5\}$, $\{5,6\}$) and $q=1$ (corresponding to the edge $\{2,5\}$).
+Hence, there are $4$ eigenvalues of $A$ greater than $-1$ and $1$ eigenvalue less than $-1$. 
+A similar statement can be made for the eigenvectors associated with all other eigenvalues of $A$.
+%%%%%%%%%%%%%%%%
+%					Figure 4			%
+%%%%%%%%%%%%%%%%
+\begin{figure}[ht]
+\centering
+\resizebox{0.20\textwidth}{!}{% Tree Graph
+\begin{tikzpicture}
+	\node[circle,draw=black,fill=gray] (1) at (-2,1) {\textbf{1}};
+	\node[circle,draw=black,fill=gray] (2) at (-1,0) {\textbf{2}};
+	\node[circle,draw=black,fill=gray] (3) at (-2,-1) {\textbf{3}};
+	\node[circle,draw=black,fill=gray] (4) at (2,1) {\textbf{4}};
+	\node[circle,draw=black,fill=gray] (5) at (1,0) {\textbf{5}};
+	\node[circle,draw=black,fill=gray] (6) at (2,-1) {\textbf{6}};
+	
+	\foreach \x/\y in {1/2,2/3,2/5,4/5,5/6}
+		\draw[black,=>latex',very thick] (\x) -- (\y);
+\end{tikzpicture}%
+}
+\caption{A tree graph of order $6$.}
+\label{fig:tree-graph}
+\end{figure}
+
+In 1984, Wiener strengthened the result in Theorem~\ref{thm:parter}~\cite{Wiener1984}.
+This stronger result, stated in Theorem~\ref{thm:parter-wiener}, is now referred to as the Parter-Wiener theorem.
+%%%%%%%%%%%%%%%%
+%					Theorem 3.4	%
+%%%%%%%%%%%%%%%%
+\begin{theorem}\label{thm:parter-wiener}
+Let $T$ be a tree and $A\in\mathcal{S}(T)$ with $\nullity{A}\geq 2$. 
+Then, there is a vertex $i\in V(T)$ such that $\nullity{A(i)} = \nullity{A} + 1$, and the principal submatrices of $A$ corresponding to at least three branches of $T$ at $i$ are singular.
+\end{theorem}
+
+Note that $A(i)$ is the principal submatrix of $A$ obtained by deleting row and column $i$ from the matrix $A$. 
+Moreover, the vertex $i$ for which $\nullity{(A-\lambda I)(i)} = \nullity{A-\lambda I}+1$ is known as a Parter-Wiener vertex for $A$ corresponding to the eigenvalue $\lambda$.
+For example, the adjacency matrix of the tree graph in Figure~\ref{fig:tree-graph} has Parter-Wiener vertices $2$ and $5$ corresponding to the eigenvalue $0$.
+Over the subsequent years, the Parter-Wiener theorem has been further developed and produced many beautiful results, e.g., see Chapter 2 of~\cite{Johnson2018}.
+
+Nylen appears to be the first to study the minimum rank of a graph, which appeared in his 1996 paper~\cite{Nylen1996}.
+In that paper, Nylen made the following observations.
+%%%%%%%%%%%%%%%%
+%					Proposition 3.5	%
+%%%%%%%%%%%%%%%%
+\begin{proposition}\label{prop:nylen}
+Let $G\in\mathbb{G}$ have order $n\geq 1$.
+Then,
+\begin{enumerate}[a.]
+\item If $A\in\mathcal{S}(G)$ and $v\in V(G)$, then the principal submatrix $A(v)$ corresponds to the induced subgraph $G-v$.
+\item If $G$ is disconnected with connected components $G_{1},~G_{2},~\ldots,~G_{k}$, then
+\[
+mr(G) = \sum_{i=1}^{k}mr(G_{i}).
+\]
+\item If $G$ has $k$ connected components, then
+\[
+mr(G) \leq n-k.
+\]
+\item For each vertex $v\in V(G)$, we have
+\[
+mr(G) - 2 \leq mr(G-v) \leq mr(G).
+\]
+\item For each edge $e\in E(G)$, we have
+\[
+mr(G) - 1 \leq mr(G-e) \leq mr(G) + 1.
+\]
+\end{enumerate}
+\end{proposition}
+
+In addition, Nylen proved the following more substantial result.
+%%%%%%%%%%%%%%%%
+%					Theorem 3.6	%
+%%%%%%%%%%%%%%%%
+\begin{theorem}\label{thm:nylen}
+Let $G\in\mathbb{G}$ and $A\in\mathcal{S}(G)$ with $\rank{A} = mr(G)$.
+Then, for any vertex $i\in V(G)$, either $\rank{A(i)} = mr(G)-2$ or $\rank{A(i)} = mr(G)$.
+\end{theorem}
+
+The rest of Nylen's paper focuses on trees; in particular, he proved the following result, which provides an algorithm for computing the minimum rank of a tree.
+Note that a \emph{high-degree} vertex of a graph is a vertex with degree at least $3$; a \emph{Nylen path} in a forest $F$ is a path with at most one high-degree vertex, and whose initial and terminal vertices each have degree $1$.
+%%%%%%%%%%%%%%%%
+%					Theorem 3.7	%
+%%%%%%%%%%%%%%%%
+\begin{theorem}\label{thm:nylen2}
+Let $P$ be a Nylen path of the forest $F$.
+Then,
+\begin{enumerate}[a.]
+\item If $P$ has a high-degree vertex $v$, then $mr(F) = mr(F-i)+2$.
+\item If $P$ does not have a high-degree vertex, then $mr(F) = \abs{V(P)}-1 + mr(F-V(P))$.
+\end{enumerate}
+\end{theorem}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %								Colin de Verdi{\'e}re Type Parameters
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020) (preloaded format=pdflatex 2020.11.9)  19 JAN 2021 14:31
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020) (preloaded format=pdflatex 2020.11.9)  26 JAN 2021 18:38
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -719,31 +719,21 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 
 {/usr/local/texlive/2020basic/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] [2
 ]
-[3] (./zero_forcing_iepg.bbl [4]) [5]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 415.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 415.
+[3] [4] [5] (./zero_forcing_iepg.bbl [6]) [7]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 579.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 579.
  (./zero_forcing_iepg.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 415.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 415.
-
-
-Package rerunfilecheck Warning: File `zero_forcing_iepg.out' has changed.
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
-
-Package rerunfilecheck Info: Checksums for `zero_forcing_iepg.out':
-(rerunfilecheck)             Before: 448A6F905EFB8ECE185CC23B27436139;187
-(rerunfilecheck)             After:  A192076CD0884A08643E766E6A9CF382;265.
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 415.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 579.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 579.
+Package rerunfilecheck Info: File `zero_forcing_iepg.out' has not changed.
+(rerunfilecheck)             Checksum: C07192E9DDC22C83D5FF969371563BE6;263.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 579.
  ) 
 Here is how much of TeX's memory you used:
- 17306 strings out of 482056
- 325157 string characters out of 5937675
- 590818 words of memory out of 5000000
- 32608 multiletter control sequences out of 15000+600000
+ 17342 strings out of 482056
+ 325554 string characters out of 5937675
+ 591215 words of memory out of 5000000
+ 32622 multiletter control sequences out of 15000+600000
  545126 words of font info for 71 fonts, out of 8000000 for 9000
  319 hyphenation exceptions out of 8191
  60i,17n,60p,398b,840s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -772,10 +762,10 @@ cal/texlive/2020basic/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr
 usr/local/texlive/2020basic/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm
 10.pfb></usr/local/texlive/2020basic/texmf-dist/fonts/type1/public/cm-super/sfr
 m0900.pfb>
-Output written on zero_forcing_iepg.pdf (5 pages, 253060 bytes).
+Output written on zero_forcing_iepg.pdf (7 pages, 269770 bytes).
 PDF statistics:
- 169 PDF objects out of 1000 (max. 8388607)
- 138 compressed objects within 2 object streams
- 22 named destinations out of 1000 (max. 500000)
- 37 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 222 PDF objects out of 1000 (max. 8388607)
+ 189 compressed objects within 2 object streams
+ 44 named destinations out of 1000 (max. 500000)
+ 45 words of extra memory for PDF output out of 10000 (max. 10000000)
 

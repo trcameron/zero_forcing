@@ -10,13 +10,35 @@
 {\sc D.~Burgarth and V.~Giovannetti}, {\em Full control by locally induced
   relaxation}, Phys. Rev. Lett., 99 (2007), p.~100501.
 
+\bibitem{Fiedler1975}
+{\sc M.~Fiedler}, {\em A property of eigenvectors of nonnegative symmetric
+  matrices and its application to graph theory}, Czech Math. J., 25 (1975),
+  pp.~619--633.
+
 \bibitem{Hochstadt1967}
 {\sc H.~Hochstadt}, {\em On some inverse problems in matrix theory}, Archiv der
   Mathematik, 2 (1967), pp.~201--207.
 
+\bibitem{Johnson2018}
+{\sc C.~Johnson and C.~Saigo}, {\em Eigenvalues, Multiplicities and Graphs},
+  Cambridge University Press, Cambridge, England, 2018.
+
 \bibitem{Johnson1998}
 {\sc C.~R. Johnson and {the assistance of Shaun Fallat}}, {\em Olga, matrix
   theory and the taussky unification problem}, Linear Algebra and its
-  Applications, 280 (1998), pp.~39 -- 49.
+  Applications, 280 (1998), pp.~39--49.
+
+\bibitem{Nylen1996}
+{\sc P.~M. Nylen}, {\em Minimum-rank matrices with prescribed graph}, Linear
+  Algebra and its Applications, 248 (1996), pp.~303--316.
+
+\bibitem{Parter1960}
+{\sc S.~Parter}, {\em On the eigenvalues and eigenvectors of a class of
+  matrices}, J. Soc. Indust. Appl. Math.,  (1960), pp.~376--388.
+
+\bibitem{Wiener1984}
+{\sc G.~Wiener}, {\em Spectral multiplicity and splitting results for a class
+  of qualitative matrices}, Linear Algebra and its Applications, 61 (1984),
+  pp.~15--29.
 
 \end{thebibliography}
