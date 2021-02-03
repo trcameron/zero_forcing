@@ -1,0 +1,29 @@
+Genetic Algorithm is a heuristic search inspired by the process of natural selection where the fittest individuals get to survive longuer and pass their "strong" genes into succeeding generations.
+
+Within a Genetic Algorithm you'll usually see three classes: Chromosome, Population, Genetic Algorithm.
+
+The Chromosome class represents the individual in the natural selection analogy. Realistically, it is meant to be the thing/concept that the algorithm is trying to "perfect". 
+In this case, the chromosome is the initial set of blue vertices that the algorithm is looking to optimize.
+The Chromosome class also has a fitness function that returns the chromosomes current fitness. Fitness represents how well that chromosomes genes are, or how close they are to being "perfected". In this case, the fitness number is set to be 99999 minus the length of the initial set of blue vertices (which is the zero-forcing number when minimized), or 0 when the initial set of blue vertices is not a forcing set.
+
+The Population class is simply a list of the all Chromosomes in the current generation.
+
+The Genetic Algorithm class is only a container for static functions that are the core evolution of the genetic algorithm. We'll go over them one by one:
+	- evole(pop): Evolves the current generation (the population given as a parameter) to create the next generation. This is done by applying the populartion crossover function to the current population, then applying the population mutation function to the resulting population. In short, this is the main function of the entire algorithm, it uses all the other functions defined in the Genetic Algorithm, Chromosome and Population class.
+
+	- crossover_population(pop): This function's purpose is to create a fresh new generation through crossover and survival of the previous generation. Before doing anything here, the function immediately allows a set number of "elite chromosomes" (this is a constant number initialized at the start of the code), as the algorithm calls them, to directly advance to the next generation. The elite chromosomes that get this privilege are the chromosomes with the highest fitness in the original generation. 
+After that, the algorithm applies the crossover_chromosomes function to 2 chromosomes picked through the select_tournament_population function, then appends the resulting chromosome to the next generation, and returns the newly made generation (or population).
+
+	- mutate_population(pop): This function's purpose is to mutate the new generation previously created by crossover_population. The function simply applies the mutate_chromosome function to each chromosome of the new population.
+
+	- crossover_chromosomes(chromosome1, chromosome2): This function's purpose is to create a fresh new chromosome from the genes of the two given chromosomes. In general, this function varies a lot depending on the purpose and the context. 
+In this case, the function creates the new chromosome by first randomly picking a length K for the genes of this chromosome (the initial set of blue vertices) between the lengths of the genes of the two given chromosomes. Next, the genes are picked by sampling (random.sample()) K vertices from the genes of both given chromosomes, then eliminating duplicate vertices. Finally, the function returns the new chromosome.
+
+	- mutate_chromosome(chromosome): This function's purpose is to mutate the given chromosome. By mutate we mean introduce possible random change the genes (the set of initial vertices) of the chromosome. You might ask, why do so? Why introduce a random factor to this beautifully organised alrogithm? The answer is, so that the evolution doesn't get stuck in a local maximum.
+Analogy: Think of the fitness of the chromosomes as a graph of a polynomial, the algorithm is trying to find the global maximum (as in the best solution). The algorithm could find a local maximum, move around it a bit and be convinced that this is the best solution possible, just because the values around it are smaller, while the actual global maximum is much better but is a bit further. This is why introducing the possiblility of mutation to the genes allows the algorithm to unstuck itself and explore solutions it hasn't yet.
+How the mutation is done varies a lot depending on the purpose and the context. In this case, if random.random() returns a number less than mutation_rate (a constant), then the function proceeds to mutate the genes of the given chromosome. The genes (set of initial blue vertices) of the chromosome and their length are then totally and randomly changed, with the chance of picking one of the genes (vertices) the chromosome first had being double the chance of picking an entirely new gene (vertex).
+
+	- select_tournament_population(pop): This function's purpose is to pick the chromosomes that get to crossover to create the next generation. This function is used in crossover_population() for this exact purpose. How this is done, again, varies widly. In this case we're using a tournament-style process to choose. A number of chromosomes tournament_selection_size (a constant) are chosen randomly from the given generation, and the two fittest (have the highest fitness) are the ones picked to crossover.
+
+
+This concludes all the classes of the genetic algorithm code, all that's left is a little loop at the end of the code that actually gets the entire thing running through the creation of a randomly generated first population, and the use of GeneticAlgorithm.evolve(pop) to evovlve as many times as needed (in this case 200 times exactly, but in other cases we evolve through the generations until a specific goal or fitness is reached). Once done, the set of genes of the fittest chromosome of the final generation IS the zero-forcing set reached.
