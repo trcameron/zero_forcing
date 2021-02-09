@@ -7,6 +7,7 @@
 \usepackage[margin=1.00in]{geometry}
 \usepackage{graphicx}
 \usepackage{hyperref}
+\usepackage{optidef}
 \usepackage{tikz}
 
 % define colors
@@ -29,6 +30,7 @@
 \newcommand\nullity[1]{\operatorname{nullity}\left(#1\right)}
 \newcommand\kernel[1]{\operatorname{null}\left(#1\right)}
 \newcommand\rank[1]{\operatorname{rank}\left(#1\right)}
+\newcommand\zip[1]{\operatorname{ZIP}\left(#1\right)}
 
 \title{On Zero Forcing and the Inverse Eigenvalue Problem for Graphs}
 \author{Thomas R. Cameron}
@@ -569,6 +571,63 @@ Then,
 %								Colin de Verdi{\'e}re Type Parameters
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Colin de Verdi{\'e}re Type Parameters}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%								Computational Approaches to Zero Forcing Number
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Computational Approaches to Zero Forcing Number}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%								Integer Program
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Integer Program}
+In this section, we review the integer program model introduced by Brimkov et al.~\cite{Brimkov2019} to compute the zero forcing number of a graph $G\in\mathbb{G}$.
+This integer program is shown in~\eqref{eq:zfip-obj}--\eqref{eq:zfip-const4}, and we reference this program by $\zip{G}$.
+Note that every edge in $E(G)$ is replaced by two directed edges with opposite direction.
+A binary variable $s_{v}$ indicates whether vertex $v$ is in the zero forcing set; an integer variable $x_{v}$ ranging in $\{0,\ldots,T\}$ indicates at which timestep vertex $v$ is forced, where $T$ is the maximum difference between the forcing times of two vertices; finally, a binary variable $y_{e}$ for each directed edge $e = (u,v)$ indicates whether $u$ forces $v$.
+The notation $\delta^{-}(v)$ refers to the set of edges pointing towards the node $v$, $N(u)$ denotes the open neighborhood of $u$, i.e., all vertices $v\in V(G)$ that are adjacent to $u$, and $N[u]$ denotes the closed neighborhood of $u$, i.e., $N[u] = N(u)\cup\{u\}$.
+%%%%%%%%%%%%%%%%
+%	Zero Forcing IP Model	%
+%%%%%%%%%%%%%%%%
+\begin{mini!}
+	{}{\sum_{v\in V}s_{v}}{}{}\label{eq:zfip-obj}
+	\addConstraint{s_{v}+\sum_{e\in\delta^{-}(v)}y_{e}}{=1,~\quad\forall v\in V}\label{eq:zfip-const1}
+	\addConstraint{x_{u}-x_{v}+(T+1)y_{e}}{\leq T,~\quad\forall e=(u,v)\in E}\label{eq:zfip-const2}
+	\addConstraint{x_{w}-x_{v}+(T+1)y_{e}}{\leq T,~\quad\forall e=(u,v)\in E,~\forall w\in N(u)\setminus\{v\}}\label{eq:zfip-const3}
+	\addConstraint{s\in\{0,1\}^{n},~x\in\{0,\ldots,T\}^{n},~y\in\{0,1\}^{m}}{}\label{eq:zfip-const4}
+\end{mini!}
+The triple $(s,x,y)$, where $s\in\{0,1\}^{n},~x\in\{0,\ldots,T\}^{n},~y\in\{0,1\}^{m}$, is a \emph{feasible solution} of $\zip{G}$ provided that $s,x,y$ satisfy~\eqref{eq:zfip-const1}--\eqref{eq:zfip-const4}.
+If, in addition, $s$ is minimal with respect to the objective function~\ref{eq:zfip-obj}, then we say that $(s,x,y)$ is an \emph{optimal solution} of $\zip{G}$.
+The corresponding minimal value of the objective function~\ref{eq:zfip-obj} is the optimal value of $\zip{G}$.
+
+%%%%%%%%%%%%%%%%
+%					Theorem 3.7	%
+%%%%%%%%%%%%%%%%
+\begin{theorem}\label{thm:zfip}
+Let $G\in\mathbb{G}$.
+The optimal value of $\zip{G}$ is equal to the zero-forcing number of $G$.
+\end{theorem}
+\begin{proof}
+Let $B\subseteq V$ denote a zero-forcing set of $G$.
+Also, fix some chronological list of forces that results in a total coloring of $G$, and let $\mathcal{F}$ be the associated set of forcing chains. 
+Since $B$ is a zero forcing set, every vertex $v\in V(G)$ is either in $B$, i.e., $s_{v}=1$, or is forced by some other vertex $u\in V(G)$, i.e., $y_{e}=1$ where $e=(u,v)$.
+Thus, constraint~\eqref{eq:zfip-const1} must hold.
+Now, let $x_{v}$ be the time step in which $v\in V(G)$ is forced. 
+Since a vertex cannot force until all but one of its neighbors are forced, it follows that for every edge $e = (u,v)$ for which $y_{e}=1$, $u$ must be forced before $v$, i.e., $x_{u}<x_{v}$. 
+Similarly, $x_{w}<x_{v}$ for all neighbors $w$ of $u$. 
+Thus, constraints~\eqref{eq:zfip-const2} and~\eqref{eq:zfip-const3} are satisfied.
+If $y_{e}=0$, then constraints~\eqref{eq:zfip-const2} and~\eqref{eq:zfip-const3} hold since $T$ is the maximum difference between the forcing times of two vertices. 
+Therefore, constraints~\eqref{eq:zfip-const1}--\eqref{eq:zfip-const4} are valid for any zero-forcing set $B$ and associated set of forcing chains $\mathcal{F}$.
+
+Conversely, let $(s,x,y)$ be a feasible solution of $\zip{G}$.
+Define $B\subseteq V(G)$ to be the set of vertices for which $s_{v}=1$. 
+By constraint~\eqref{eq:zfip-const1}, each vertex $v\in V(G)$ is either in $B$ or is the head of exactly one edge $e = (u,v)$ such that $y_{e}=1$.
+Consider any such edge; then, by constraints~\eqref{eq:zfip-const2} and~\eqref{eq:zfip-const3}, there must be an integer $x_{v}\in\{0,\ldots,T\}$ such that $x_{w}+1\leq x_{v}$ for all $w\in N[u]\setminus\{v\}$. 
+Therefore, the edges $e=(u,v)$ for which $y_{e}=1$ define a chronological list of forces.
+Since every vertex $v\in V(G)$ is either in $B$ or is the head of exactly one edge $e = (u,v)$ such that $y_{e}=1$, it follows that $B$ is a zero-forcing set. 
+If, in addition, $s$ is minimal with respect to the objective function~\eqref{eq:zfip-obj}, i.e., $(s,x,y)$ is an optimal solution of $\zip{G}$, then $B$ is a minimal zero-forcing set and it follows that the objective value of $\zip{G}$ is the zero-forcing number of $G$.
+\end{proof}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                 	   			Bibliography
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -3,44 +3,44 @@ Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
 The top-level auxiliary file: zero_forcing_iepg.aux
 The style file: siam.bst
 Database file #1: Bibliography.bib
-You've used 9 entries,
+You've used 10 entries,
             2030 wiz_defined-function locations,
-            564 strings with 5058 characters,
-and the built_in function-call counts, 3358 in all, are:
-= -- 344
-> -- 117
+            572 strings with 5237 characters,
+and the built_in function-call counts, 3791 in all, are:
+= -- 389
+> -- 135
 < -- 0
-+ -- 49
-- -- 38
-* -- 244
-:= -- 500
-add.period$ -- 9
-call.type$ -- 9
-change.case$ -- 45
++ -- 56
+- -- 44
+* -- 278
+:= -- 565
+add.period$ -- 10
+call.type$ -- 10
+change.case$ -- 51
 chr.to.int$ -- 0
-cite$ -- 9
-duplicate$ -- 165
-empty$ -- 244
-format.name$ -- 38
-if$ -- 733
+cite$ -- 10
+duplicate$ -- 184
+empty$ -- 273
+format.name$ -- 44
+if$ -- 827
 int.to.chr$ -- 0
-int.to.str$ -- 9
-missing$ -- 10
-newline$ -- 30
-num.names$ -- 18
-pop$ -- 35
+int.to.str$ -- 10
+missing$ -- 11
+newline$ -- 33
+num.names$ -- 20
+pop$ -- 39
 preamble$ -- 1
-purify$ -- 37
+purify$ -- 42
 quote$ -- 0
-skip$ -- 158
+skip$ -- 176
 stack$ -- 0
-substring$ -- 267
-swap$ -- 82
+substring$ -- 304
+swap$ -- 92
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 34
+type$ -- 38
 warning$ -- 0
-while$ -- 40
-width$ -- 10
-write$ -- 83
+while$ -- 45
+width$ -- 12
+write$ -- 92

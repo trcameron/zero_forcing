@@ -1,10 +1,15 @@
-\begin{thebibliography}{1}
+\begin{thebibliography}{10}
 
 \bibitem{Barrett2013}
 {\sc W.~Barrett, A.~Lazenby, N.~Malloy, C.~Nelson, W.~Sexton, R.~Smith,
   J.~Sinckovic, and T.~Yang}, {\em The combinatorial inverse eigenvalue
   problems: complete graphs and small graphs with strict inequality}, Electron.
   J. Linear Algebra, 26 (2013), pp.~656--672.
+
+\bibitem{Brimkov2019}
+{\sc B.Brimkov, C.~C. Fast, and I.~V. Hicks}, {\em Computational approaches for
+  zero forcing and related problems}, European Journal of Operational Research,
+  273 (2019), pp.~889--903.
 
 \bibitem{Burgarth2007}
 {\sc D.~Burgarth and V.~Giovannetti}, {\em Full control by locally induced
