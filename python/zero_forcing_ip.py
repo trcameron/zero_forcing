@@ -18,7 +18,6 @@ def zero_forcing(a):
             if(a[i,j]==1):
                 edges.append((i,j))
                 m += 1
-    print(edges)
     # objective function
     obj = concatenate((ones(n),zeros(n),zeros(m)))
     # lower and upper bounds
@@ -55,26 +54,17 @@ def zero_forcing(a):
         sense  += "L"
         count += 1
     # constraint 3
-    for k in range(m):
-        for w in range(n):
-            if(w!=edges[k][1] and a[edges[k][0],w]==1):
-                # x_{w} - x_{v} + (T+1)y_{e}, where e = (u,v) and w!=v, u~w
-                rows.extend([count,count,count])
-                cols.extend([n+w,n+edges[k][1],2*n+k])
-                vals.extend([1,-1,T+1])
-                # <= T
-                rhs.append(T)
-                sense += "L"
-                count += 1
-    # constraint 4
-    for v in range(n):
-        # Ts_{v} + x_{v}
-        rows.extend([count,count])
-        cols.extend([v,n+v])
-        vals.extend([T,1])
-        rhs.append(T)
-        sense += "L"
-        count += 1
+    #for k in range(m):
+    #    for w in range(n):
+    #        if(w!=edges[k][1] and a[edges[k][0],w]==1):
+    #            # x_{w} - x_{v} + (T+1)y_{e}, where e = (u,v) and w!=v, u~w
+    #            rows.extend([count,count,count])
+    #            cols.extend([n+w,n+edges[k][1],2*n+k])
+    #            vals.extend([1,-1,T+1])
+    #            # <= T
+    #            rhs.append(T)
+    #            sense += "L"
+    #            count += 1
     # cplex problem variable
     prob = Cplex()
     # quiet results
@@ -89,7 +79,7 @@ def zero_forcing(a):
     prob.linear_constraints.add(rhs=rhs, senses=sense)
     prob.linear_constraints.set_coefficients(zip(rows, cols, vals))
     # write lp file
-    prob.write("zero_forcing.lp")
+    # prob.write("zero_forcing.lp")
     # alg method
     alg = prob.parameters.lpmethod.values
     prob.parameters.lpmethod.set(alg.auto)
