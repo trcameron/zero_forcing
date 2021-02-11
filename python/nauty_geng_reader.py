@@ -1,6 +1,6 @@
 # Nauty GENG Reader
 from sys import stdin
-from numpy import zeros
+from numpy import array, zeros
 from networkx import Graph, draw
 from matplotlib import pyplot as plt
 
@@ -114,14 +114,23 @@ def graph6(bytes_in):
 ###             main                        ###
 ###############################################
 def main():
-    try:
-        # read input stream
-        for line in stdin:
-            a = graph6(bytes(line.rstrip(),'utf-8'))
-            g = Graph(a)
-            draw(g,ax=plt.subplot(111))
-            plt.show()
-    except Exception as e:
-        print(e)
+    d6_line = "GruZp_"
+    s6_line = ":GkIMQMQPWCbPn"
+    a1 = array([[0,1,1,0,1,1,0,0],[1,0,0,1,1,0,1,0],[1,0,0,1,0,0,1,1],[0,1,1,0,1,1,1,1],[1,1,0,1,0,1,1,0],[1,0,0,1,1,0,0,0],[0,1,1,1,1,0,0,0],[0,0,1,1,0,0,0,0]])
+    a2 = graph6(bytes(d6_line.rstrip(),'utf-8'))
+    print(a1==a2)
+    
+    a1 = array([[0,0,0,1,0,0,0,1],[0,0,0,0,0,1,1,1],[0,0,0,0,1,1,1,1],[1,0,0,0,1,1,0,1],[0,0,1,1,0,0,1,1],[0,1,1,1,0,0,1,0],[0,1,1,0,1,1,0,1],[1,1,1,1,1,0,1,0]])
+    a2 = sparse6(bytes(s6_line.rstrip(),'utf-8'))
+    print(a1==a2)
+    #try:
+    #    # read input stream
+    #    for line in stdin:
+    #        a = graph6(bytes(line.rstrip(),'utf-8'))
+    #        g = Graph(a)
+    #        draw(g,ax=plt.subplot(111))
+    #        plt.show()
+    #except Exception as e:
+    #    print(e)
 if __name__ == '__main__':
     main()
