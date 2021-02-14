@@ -3,9 +3,9 @@ import random
 
 
 class GraphMatrix:
-
     """ Takes in a networkx graph and a list of diagonal entries starting from the top left to the bottom right, and
     creates the matrix corresponding to that graph. """
+
     def __init__(self, graph: nx.Graph, diagonal_entries: list):
         self.matrix = []
 
@@ -22,6 +22,7 @@ class GraphMatrix:
 
     """ Shows the matrix of the graph the object was initialized with. If upper is given to be True, shows the 
     upper-triangular form of that matrix. """
+
     def show(self, upper=False):
         print("[")
         for line in (self.matrix if not upper else self.upper_triangle()):
@@ -35,6 +36,7 @@ class GraphMatrix:
         print("]")
 
     """ Forms and returns the upper-triangular form of the matrix of the given graph. """
+
     def upper_triangle(self):
         n = len(self.matrix)
 
@@ -64,6 +66,7 @@ class GraphMatrix:
         return matrix
 
     """ Returns the rank of the matrix of the given graph. """
+
     def rank(self):
         n = len(self.matrix)
         return n - self.upper_triangle().count([0] * n)
@@ -86,7 +89,7 @@ def forcing_rule(graph: nx.Graph, node0, b):
     return False
 
 
-def forcing_process(graph: nx.Graph, b, rule=forcing_rule):
+def forcing_process(graph: nx.Graph, b, rule=forcing_rule, t=1):
     """ Applies the forcing rule given to the given graph with the given initial set of blue vertices b. Once the
     forcing process is done, returns the final set of blue vertices. """
 
@@ -99,12 +102,12 @@ def forcing_process(graph: nx.Graph, b, rule=forcing_rule):
             new_b.append(node1)
 
     if len(new_b) == len(list(graph.nodes)):
-        return new_b
+        return new_b, t
 
     if b == new_b:
-        return new_b
+        return new_b, t
 
-    return forcing_process(graph, new_b, rule)
+    return forcing_process(graph, new_b, rule, t + 1)
 
 
 def zero_forcing(graph: nx.Graph):
@@ -116,7 +119,8 @@ def zero_forcing(graph: nx.Graph):
     num_of_elite_chrom = 1
     tournament_selection_size = 4
     mutation_rate = 0.25
-    target_gen = 200
+    target_gen = 500
+    max_stagnant = 20 + len(list(graph.nodes)) * 2
 
     class Chromosome:
         def __init__(self):
@@ -124,6 +128,7 @@ def zero_forcing(graph: nx.Graph):
             k = random.randrange(1, len(lst) + 1)
             self.genes = random.sample(lst, k)
             self.fitness = self.get_fitness()
+            self.t = 0
 
         def get_genes(self):
             return self.genes
@@ -133,10 +138,12 @@ def zero_forcing(graph: nx.Graph):
                 graph.nodes[node1]["color"] = "white"
 
             self.fitness = 0
-            forcing = len(forcing_process(graph, self.genes))
+            res = forcing_process(graph, self.genes)
+            self.t = res[1]
+            forcing = len(res[0])
             if forcing != len(list(graph.nodes)):
-                return 0
-            result = 99999 - len(self.genes)
+                return -10 ** 20
+            result = (10 ** 20) - (len(self.genes) + 2) ** 5 - self.t
 
             for node1 in graph.nodes:
                 graph.nodes[node1]["color"] = "white"
@@ -212,35 +219,46 @@ def zero_forcing(graph: nx.Graph):
 
     def _print_population(pop, gen_number):
         print("\n--------------------------------------------------")
-        print("Generation #", gen_number, "| Fittest chromosome fitness:", pop.get_chromosomes()[0].fitness)
+        print("Generation #", gen_number, "| Fittest chromosome fitness:", pop.get_chromosomes()[0].get_fitness())
         print("--------------------------------------------------")
         i = 0
         for x in pop.get_chromosomes():
-            print("Chromosome  #", i, " :", x, "| Fitness: ", x.fitness)
+            print("Chromosome  #", i, " :", x, "| Fitness: ", x.get_fitness())
             i += 1
 
     population = Population(population_size)
     population.get_chromosomes().sort(key=lambda x: x.get_fitness(), reverse=True)
     # _print_population(population, 0)
     generation_number = 1
+    stagnant = 0
     while generation_number <= target_gen:
+        old1, old2 = len(population.get_chromosomes()[0].genes), population.get_chromosomes()[0].t
         population = GeneticAlgorithm.evolve(population)
         population.get_chromosomes().sort(key=lambda x: x.get_fitness(), reverse=True)
         # _print_population(population, generation_number)
+        if (len(population.get_chromosomes()[0].genes), population.get_chromosomes()[0].t) == (old1, old2):
+            stagnant += 1
+        else:
+            stagnant = 0
+        if stagnant > max_stagnant:
+            population.get_chromosomes().sort(key=lambda x: x.fitness, reverse=True)
+            return len(population.get_chromosomes()[0].genes), population.get_chromosomes()[0].t, \
+                   population.get_chromosomes()[0].genes
         generation_number += 1
 
     population.get_chromosomes().sort(key=lambda x: x.fitness, reverse=True)
-    return len(population.get_chromosomes()[0].genes)
+    return len(population.get_chromosomes()[0].genes), population.get_chromosomes()[0].t, population.get_chromosomes()[
+        0].genes
 
 
 G = nx.Graph()
-G.add_edges_from([(1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (1, 7)])  # This is a star graph
+G.add_edges_from([(1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (1, 7)])
 for node in G.nodes:
     G.nodes[node]["color"] = "white"
 
-for i in range(100):
-    if zero_forcing(G) != 5:
-        print("no")
+z = zero_forcing(G)
+print("Zero Frocing number: " + str(z[0]) + "  |  Propagation number: " + str(z[1]) + "  |  Zero Forcing Set: " +
+      str(z[2]))
 
 """A = GraphMatrix(G, [1, 1, 1, 1, 1, 1, 1])
 A.show(True)
