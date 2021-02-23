@@ -5,42 +5,6 @@ from nauty_geng_reader import graph6
 from numpy import array, concatenate, ones, sum, zeros
 
 ###############################################
-###         zero forcing psd rule           ###
-###############################################
-def zf_psd(a):
-    # number of vertices
-    n,_ = a.shape
-    # Edge set
-    edges = []
-    m = 0 # number of edges
-    for i in range(n):
-        for j in range(n):
-            if(a[i,j]==1):
-                edges.append((i,j))
-                m += 1
-    # objective function
-    obj = concatenate((ones(n),zeros(n),zeros(m)))
-    # lower and upper bounds
-    T = n-1 # maximal propogation time
-    lb = concatenate((zeros(n),zeros(n),zeros(m)))
-    ub = concatenate((ones(n),T*ones(n),ones(m)))
-    # constraint 1
-    for v in range(n):
-        # s_{v}
-        rows.append(count)
-        cols.append(v)
-        vals.append(1)
-        for k in range(m):
-            if(edges[k][1]==v):
-                # y_{e}, where e = (u,v)
-                rows.append(count)
-                cols.append(2*n+k)
-                vals.append(1)
-        # = 1
-        rhs.append(1)
-        sense += "E"
-        count += 1
-###############################################
 ###         zero forcing standard rule      ###
 ###############################################
 def zf_std(a):
