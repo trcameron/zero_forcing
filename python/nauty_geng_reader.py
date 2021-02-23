@@ -93,6 +93,8 @@ def sparse6(string):
 ###             graph6                      ###
 ###############################################
 def graph6(bytes_in):
+    print(bytes_in)
+    print(type(bytes_in))
     # subtract 63 from each bit, check for bits that are over 126
     data = [c - 63 for c in bytes_in]
     if any(c > 63 for c in data):

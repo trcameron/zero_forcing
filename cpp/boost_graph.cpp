@@ -7,7 +7,7 @@
 
 using namespace boost;
 
-int main(int,char*[])
+int main(int argc,char** argv)
 {
 	// create a typedef for the Graph type
 	typedef adjacency_list<vecS, vecS, bidirectionalS> Graph;
