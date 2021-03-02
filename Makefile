@@ -12,8 +12,11 @@ graph6:
 nauty_graph6: graph6
 	$(NAUTY)/geng $(SIZE) | ./graph6
 	
-python_test:
-	$(NAUTY)/geng $(SIZE) | python3 python/zf_test.py
+run_rand_test:
+	python3 python/rand_test.py
+	
+run_small_test:
+	python3 python/small_test.py
 	
 uninstall:
 	@rm -f boost_graph
