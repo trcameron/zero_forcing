@@ -1,9 +1,9 @@
 #include <iostream>
-#include <fstream>
 #include <vector>
+#include <graph6.h>
 using namespace std;
 
-std::vector<std::vector<int>> read_graph6(const string line)
+vector<vector<int>> read_graph6(const string line)
 {
 	int m = line.size();		// length of line
 	int data[m];				// data for graph
@@ -43,7 +43,7 @@ std::vector<std::vector<int>> read_graph6(const string line)
 		}
 	}
 	// initialize adjacency matrix
-	std::vector<std::vector<int>> adj(n,std::vector<int>(n,0));
+	vector<vector<int>> adj(n,vector<int>(n,0));
 	int k = 0;
 	for(int j=1; j<n; j++)
 	{
@@ -58,35 +58,4 @@ std::vector<std::vector<int>> read_graph6(const string line)
 		}
 	}
 	return adj;
-}
-
-int main(int argc,char** argv)
-{
-	/*
-	const string line = "GruZp_";
-	*/
-	std::vector<std::vector<int>> adj;
-	string line;
-	ifstream file;
-	if (argc > 1)
-	{
-		file.open(argv[1]);
-	}
-	istream &f = (argc > 1 ? file : cin);
-	while(getline(f,line))
-	{
-		adj = read_graph6(line);
-		int n = adj.size();
-		for(int i=0; i<n; i++)
-		{
-			for(int j=0; j<n; j++)
-			{
-				std::cout << adj[i][j] <<  " ";
-			}
-			std::cout << std::endl;
-		}
-		std::cout << std::endl;
-	}
-	file.close();
-	return 0;
 }

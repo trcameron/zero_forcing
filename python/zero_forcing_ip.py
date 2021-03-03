@@ -2,6 +2,8 @@
 from sys import stdin
 from cplex import Cplex
 from nauty_geng_reader import graph6
+from networkx import Graph, draw
+from matplotlib import pyplot as plt
 from numpy import array, concatenate, ones, sum, zeros
 
 ###############################################
@@ -82,7 +84,7 @@ def zf_std(a):
     # prob.write("zero_forcing.lp")
     # alg method
     alg = prob.parameters.lpmethod.values
-    prob.parameters.lpmethod.set(alg.auto)
+    prob.parameters.lpmethod.set(alg.dual)
     # solve problem
     prob.solve()
     # solution variables
@@ -97,22 +99,21 @@ def zf_std(a):
 ###             main                        ###
 ###############################################
 def main():
-    a = array([[0, 0, 0, 0, 0, 1, 0, 1],[0, 0, 0, 0, 0, 0, 1, 0],[0, 0, 0, 0, 0, 0, 1, 0],
-            [0, 0, 0, 0, 0, 0, 0, 1],[0, 0, 0, 0, 0, 0, 0, 1],[1, 0, 0, 0, 0, 0, 0, 1],
-            [0, 1, 1, 0, 0, 0, 0, 1],[1, 0, 0, 1, 1, 1, 1, 0]],dtype=float)
-    zf, s, x, y = zf_std(a)
-    print(zf)
-    print(s)
-    print(x)
-    print(y)
-    #try:
-    #    # read input stream
-    #    for line in stdin:
-    #        a = graph6(bytes(line.rstrip(),'utf-8'))
-    #        zf = zero_forcing(a)
-    #        print(a)
-    #        print(zf)
-    #except Exception as e:
-    #    print(e)
+    a = array([[0,1,0,1,1],[1,0,1,0,0],[0,1,0,1,0],[1,0,1,0,0],[1,0,0,0,0]],dtype=float)
+    g = Graph(a)
+    zf = zf_std(a)
+    
+    color_map = []
+    for i in range(len(zf[1])):
+        if(round(zf[1][i])==1):
+            color_map.append('#0000FF')
+        else:
+            color_map.append('#C0C0C0')
+    draw(g,with_labels=True,node_color=color_map,ax=plt.subplot(121))
+    plt.subplot(122)
+    plt.axis("off")
+    plt.text(0.5,0.5,"GA ZF-Number = %.2f"%zf[0],size=12,ha="center")
+    plt.savefig("zf_ip_test.png",dpi=400)
+    plt.cla(); plt.clf(); plt.close()
 if __name__ == '__main__':
     main()
