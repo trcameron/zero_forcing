@@ -1,9 +1,21 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include <ilcplex/ilocplex.h>
 #include <graph6.h>
+#include <ilcplex/ilocplex.h>
 using namespace std;
+
+int zero_forcing(vector<vector<int>> adj)
+{
+	IloEnv env;
+	/*
+	IloModel model(env);
+	IloNumVarArray var(env);
+	IloRangeArray con(env);
+	*/
+	
+	return 0;
+}
 
 int main(int argc,char** argv)
 {
