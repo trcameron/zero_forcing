@@ -6,12 +6,11 @@ include make.inc
 boost_graph:
 	g++ -std=gnu++2a cpp/boost_graph.cpp -o boost_graph -I boost_1_75_0
 	
-cplex_test:
-	$(CCC) $(CCFLAGS) $(CCLNDIRS) -o cplex_test cpp/graph6.cpp cpp/cplex_test.cpp $(CCLNFLAGS)
-	#g++ -std=gnu++2a -m64 -fPIC cpp/graph6.cpp cpp/cplex_test.cpp -o cplex_test -I $(CPLEXI) -I $(CONCERTI) -I $(LOCAL) -L $(CPLEXL) -L $(CONCERTL)
+zf_test:
+	$(CCC) $(CCFLAGS) $(CCLNDIRS) -o zf_test cpp/zero_forcing.cpp cpp/zf_test.cpp $(CCLNFLAGS)
 	
-nauty_graph6: cplex_test
-	$(NAUTY)/geng $(SIZE) | ./cplex_test
+nauty_graph6: zf_test
+	$(NAUTY)/geng $(SIZE) | ./zf_test
 	
 run_rand_test:
 	$(PYTHON) python/rand_test.py
@@ -20,4 +19,4 @@ run_small_test:
 	$(PYTHON) python/small_test.py
 	
 uninstall:
-	@rm -f cplex_test
+	@rm -f zf_test
