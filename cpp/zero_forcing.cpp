@@ -163,11 +163,12 @@ int zf_ip(vector<vector<int>> adj)
 	cplex.setOut(env.getNullStream());
     if(!cplex.solve())
 	{
-       env.error() << "Failed to optimize LP" << endl;
+       env.out() << "Failed to optimize LP" << endl;
        throw(-1);
     }
-    IloNumArray vals(env);
+	/*
     env.out() << "Solution status = " << cplex.getStatus() << endl;
     env.out() << "Solution value  = " << cplex.getObjValue() << endl;
+	*/
 	return cplex.getObjValue();
 }

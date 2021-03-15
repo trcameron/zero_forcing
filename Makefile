@@ -18,5 +18,11 @@ run_rand_test:
 run_small_test:
 	$(PYTHON) python/small_test.py
 	
+heuristic:
+	$(NAUTY)/geng $(SIZE) | $(PYTHON) python/heuristic.py
+	
+wavefront:
+	$(NAUTY)/geng $(SIZE) | $(PYTHON) python/wavefront.py
+	
 uninstall:
 	@rm -f zf_test

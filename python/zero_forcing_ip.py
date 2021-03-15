@@ -1,5 +1,4 @@
 # Zero Forcing IP
-from sys import stdin
 from cplex import Cplex
 from nauty_geng_reader import graph6
 from networkx import Graph, draw
