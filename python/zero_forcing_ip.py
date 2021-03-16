@@ -8,17 +8,15 @@ from numpy import array, concatenate, ones, sum, zeros
 ###############################################
 ###         zero forcing standard rule      ###
 ###############################################
-def zf_std(a):
+def zf_std(g):
     # number of vertices
-    n,_ = a.shape
-    # Edge set
+    n = len(g.nodes)
+    # bi-directional edges
     edges = []
-    m = 0 # number of edges
-    for i in range(n):
-        for j in range(n):
-            if(a[i,j]==1):
-                edges.append((i,j))
-                m += 1
+    m = 0
+    for e in g.edges:
+        edges.extend([e,e[::-1]])
+        m += 2
     # objective function
     obj = concatenate((ones(n),zeros(n),zeros(m)))
     # lower and upper bounds
@@ -29,7 +27,7 @@ def zf_std(a):
     count = 0; sense = ""
     rows = []; cols = []; vals = []; rhs = []
     # constraint 1
-    for v in range(n):
+    for v in g.nodes:
         # s_{v}
         rows.append(count)
         cols.append(v)
@@ -56,8 +54,8 @@ def zf_std(a):
         count += 1
     # constraint 3
     for k in range(m):
-        for w in range(n):
-            if(w!=edges[k][1] and a[edges[k][0],w]==1):
+        for w in g.neighbors(edges[k][0]):
+            if(w!=edges[k][1]):
                 # x_{w} - x_{v} + (T+1)y_{e}, where e = (u,v) and w!=v, u~w
                 rows.extend([count,count,count])
                 cols.extend([n+w,n+edges[k][1],2*n+k])
@@ -93,14 +91,14 @@ def zf_std(a):
     y = var[2*n:]
     opt = prob.solution.get_objective_value()
     # return
-    return opt, s, x, y
+    return round(opt), s, x, y
 ###############################################
 ###             main                        ###
 ###############################################
 def main():
     a = array([[0,1,0,1,1],[1,0,1,0,0],[0,1,0,1,0],[1,0,1,0,0],[1,0,0,0,0]],dtype=float)
     g = Graph(a)
-    zf = zf_std(a)
+    zf = zf_std(g)
     
     color_map = []
     for i in range(len(zf[1])):

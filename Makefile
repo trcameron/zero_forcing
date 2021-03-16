@@ -18,6 +18,9 @@ run_rand_test:
 run_small_test:
 	$(PYTHON) python/small_test.py
 	
+zf_test:
+	$(NAUTY)/geng $(SIZE) | $(PYTHON) python/zf_test.py
+	
 heuristic:
 	$(NAUTY)/geng $(SIZE) | $(PYTHON) python/heuristic.py
 	

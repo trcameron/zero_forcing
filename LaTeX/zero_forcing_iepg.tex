@@ -2,6 +2,8 @@
 \usepackage{amsmath}
 \usepackage{amsthm}
 \usepackage{amssymb}
+\usepackage{algorithm}
+\usepackage{algorithmic}
 \usepackage{dirtytalk}
 \usepackage{enumerate}
 \usepackage[margin=1.00in]{geometry}
@@ -724,8 +726,45 @@ If, in addition, $s$ is minimal with respect to the objective function~\eqref{eq
 %								Heuristics
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Heuristics}
+In this section, we review a heuristic method for the zero-forcing number of a graph from~\cite{Brimkov2021}.
+This heuristic is based on adding vertices to a set in order to maximize its closure.
+Let $G = (V,E)$ be a simple graph and let $\mathcal{S}\subseteq V$ be an initial set of blue vertices.
+The closure of $\mathcal{S}$, denoted $cl(\mathcal{S})$, is the set of blue vertices obtained after applying the color change rule until no other white vertices can be forced blue. 
+Note that $\mathcal{S}$ is a zero-forcing set of $G$ if $cl(\mathcal{S}) = V$. 
 
+In Algorithm~\ref{alg:heuristic}, $\mathcal{S}\subseteq V$ denotes a set of blue vertices and let $\mathcal{C}$ denotes the closure of $\mathcal{S}$. 
+Note  that $\mathcal{S}$ is initialized as the empty set and grows on each iteration of the while loop until its closure, $\mathcal{C}$, is equal to $V$. 
 
+%%%%%%%%%%%%%%%%%%%%%%%%
+%						Algorithm 2.1						%
+%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{algorithm}
+\caption{Heuristic method for the zero-forcing number.}
+\label{alg:heuristic}
+\begin{algorithmic}
+\STATE{Given a graph $G=(V,E)$, this algorithm returns a zero-forcing of $G$.}
+\STATE{$\mathcal{S}\gets\emptyset$}
+\STATE{$\mathcal{C}\gets\emptyset$}
+\WHILE{$\mathcal{C}\neq V$}
+	\STATE{$\mathcal{C}^{*}\gets\emptyset$}
+	\STATE{$\mathcal{A}^{*}\gets\emptyset$}
+	\FOR{$v\in V\setminus{\mathcal{C}}$}
+		\STATE{$\mathcal{S}\gets \mathcal{C}\cup A(v,\mathcal{C})$}
+		\IF{$f(cl(\mathcal{S}),v,\mathcal{C}) > f(C^{*},v,C)$}
+			\STATE{$A^{*}\gets A(v,\mathcal{C})$}
+			\STATE{$C^{*}\gets cl(\mathcal{S})$}
+		\ENDIF
+	\ENDFOR
+	\STATE{$\mathcal{C}\gets\mathcal{C}^{*}$}
+	\STATE{$\mathcal{S}\gets\mathcal{S}\cup\mathcal{A}^{*}$}
+	\FOR{$v\in\mathcal{S}$}
+		\IF{$cl(\mathcal{S}\setminus{\{v\}} = V$}
+			\STATE{$\mathcal{S}\gets\mathcal{S}\setminus{\{v\}}$}
+		\ENDIF
+	\ENDFOR
+\ENDWHILE
+\end{algorithmic}
+\end{algorithm}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %								Propagation Time and Throttling Number
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

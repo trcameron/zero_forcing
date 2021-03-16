@@ -27,19 +27,18 @@ def closure(g,s):
         u = stack.pop() # vertex that forces
         for v in g.neighbors(u):
             if(not colored[v]):  # vertex that is forced
-                break
-        # color v
-        colored[v] = 1
-        # update the number of colored neighbors for each vertex in s that is a neighbor of v. 
-        for w in g.neighbors(v):
-            if(colored[w]):
-                count[w] += 1
-                if(count[w]==(g.degree[w]-1)):  # update vertices that can do forcing
-                    stack.append(w)
-        # update the number of colored neighbors of v
-        count[v] = sum([colored[u] for u in g.neighbors(v)])
-        if(count[v]==(g.degree[v]-1)):
-            stack.append(v)
+                # color v
+                colored[v] = 1
+                # update the number of colored neighbors for each vertex in s that is a neighbor of v. 
+                for w in g.neighbors(v):
+                    if(colored[w]):
+                        count[w] += 1
+                        if(count[w]==(g.degree[w]-1)):  # update vertices that can do forcing
+                            stack.append(w)
+                # update the number of colored neighbors of v
+                count[v] = sum([colored[u] for u in g.neighbors(v)])
+                if(count[v]==(g.degree[v]-1)):
+                    stack.append(v)
     # return
     return frozenset([v for v in g.nodes if colored[v]])
 ###############################################
@@ -60,7 +59,7 @@ def wavefront(g):
                 sv = set([v])
                 s_cl = closure(g,s.union(nbhd).union(sv))
                 r_cl = r + len(sv-s) + max(len(nbhd-s)-1,0)
-                if(r_cl<=k and not any([(s_cl,i) in c for i in range(1,k+1)])):
+                if(r_cl<=k and not any([(s_cl,i) in c for i in range(k+1)])):
                     c = c.union(set([(s_cl,r_cl)]))
                     if(len(s_cl)==n):
                         return r_cl
