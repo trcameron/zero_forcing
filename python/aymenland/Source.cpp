@@ -33,6 +33,8 @@ class Graph {
     public:
     vector<string> colors;
     vector< vector<int>> adjacencies;
+    int min_degree;
+    int max_degree;
     vector<int> vertices;
     vector< vector<int>> edges;
 
@@ -56,18 +58,25 @@ class Graph {
             }
         }
 
+        min_degree = 9999;
+        max_degree = 0;
+
         for (int i = 0; i < vertices.size(); i++) {
             vector<int> lst;
             for (int j = 0; j < edges.size(); j++) {
                 if (vertices[i] == edges[j][0]) {
-                    if (!In(edges[j][1], lst))
+                    if (!In(edges[j][1], lst) && edges[j][1] != edges[j][0])
                         lst.push_back(edges[j][1]);
                 }
                 else if (vertices[i] == edges[j][1])
-                    if (!In(edges[j][0], lst))
+                    if (!In(edges[j][0], lst) && edges[j][0] != edges[j][1])
                         lst.push_back(edges[j][0]);
             }
 
+            if (lst.size() < min_degree)
+                min_degree = lst.size();
+            if (lst.size() > max_degree)
+                max_degree = lst.size();
             adjacencies.push_back(lst);
         }
     }
@@ -202,6 +211,7 @@ int population_size = 8;
 int num_of_elite_chrom = 1;
 int tournament_selection_size = 4;
 double mutation_rate = 0.25;
+int min_size, max_size;
 
 class Chromosome {
 public:
@@ -215,7 +225,7 @@ public:
     Chromosome(Graph& G1, bool (*rule1)(Graph&, int, const vector<int>&) = &forcing_rule, bool throttling_num1 = false) {
         G = G1;
         rule = rule1;
-        int k = rand() % G.vertices.size() + 1;
+        int k = rand() % (max_size - min_size + 1) + min_size;
         sample(G.vertices, genes, k);
         t = 0;
         throttling_num = throttling_num1;
@@ -304,7 +314,8 @@ public:
     static Chromosome crossover_chromosomes(const Chromosome& chromosome1, const Chromosome& chromosome2, Graph& G, bool (*rule)(Graph&, int, const vector<int>&) = &forcing_rule, bool throttling_num = false) {
         Chromosome crossover_chrom(G, rule, throttling_num);
         crossover_chrom.genes = {};
-        int k = rand() % (1 + max(chromosome1.genes.size(), chromosome2.genes.size()) - min(chromosome1.genes.size(), chromosome2.genes.size())) + min(chromosome1.genes.size(), chromosome2.genes.size());
+        int n1 = chromosome1.genes.size(), n2 = chromosome2.genes.size();
+        int k = rand() % (1 + max(n1, n2) - min(n1, n2)) + min(n1, n2);
 
         vector<int> combined_genes = chromosome1.genes;
         combined_genes.insert(combined_genes.end(), chromosome2.genes.begin(), chromosome2.genes.end());
@@ -321,7 +332,8 @@ public:
         if ((rand() % 1000) / 1000.0 < mutation_rate) {
             vector<int> lst = G.vertices;
             //lst.insert(lst.end(), chromosome.genes.begin(), chromosome.genes.end());   add this line to make the chromosome's genes have twice the chance of being picked
-            int k = rand() % G.vertices.size() + 1;
+            int n = lst.size();
+            int k = rand() % (max_size - min_size + 1) + min_size;
             chromosome.genes = {};
             sample(lst, chromosome.genes, k);
             //sort(chromosome.genes.begin(), chromosome.genes.end());                   IF YOU UNCOMMENT THE lst.insert LINE THEN UNCOMMENT THESE TWO ASWELL
@@ -358,7 +370,7 @@ void print_population(Population& pop, int gen_number) {
     }
 }
 
-// Applied Genetic Algorithm
+// Applying Genetic Algorithm
 
 struct returnTriplet {
     int zero_forcing_num;
@@ -368,8 +380,13 @@ struct returnTriplet {
 };
 returnTriplet zero_forcing(Graph& G, bool (*rule)(Graph&, int, const vector<int>&) = &forcing_rule, bool throttling_num = false) {
     /* Applies a Genetic Algorithm to the given graph in order to find its minimal zero-forcing set, and therefore zero-forcing number. Returns the zero-forcing number, propagation number, and zero-forcing set */
+    if (G.edges.size() == 0)
+        return { (int) G.vertices.size() , 0, G.vertices, (int) G.vertices.size()};
 
-    double target_gen = max(37.708025691857216 * G.vertices.size() + 0.6188752011422203 * G.edges.size() - 225.01828721571377, 30.0);
+    int n = G.vertices.size();
+    max_size = min(n * G.max_degree / (G.max_degree + 1), n - 1);
+    min_size = G.edges.size() / n;
+    double target_gen = max(37.708025691857216 * G.vertices.size() + 0.6188752011422203 * G.edges.size() - 255.01828721571377, 30.0);
     srand(time(NULL));
 
     Population population(population_size, G, rule, throttling_num);
@@ -399,12 +416,13 @@ returnTriplet zero_forcing(Graph& G, bool (*rule)(Graph&, int, const vector<int>
 
 
 int main() {
-    //Graph G({ {1, 7}, {1, 5}, {2, 7}, {2, 6}, {3, 6}, {0, 5}, {0, 6}, {5, 7}, {6, 7}, {4, 7} });
+    //Graph G({ {1, 1}, {6, 6}, {2, 2}, {3, 3}, {4, 4} });
     Graph G({ {0, 0, 0, 0, 0, 1, 1, 0} , {0, 0, 0, 0, 0, 1, 0, 1}, {0, 0, 0, 0, 0, 0, 1, 1}, {0, 0, 0, 0, 0, 0, 1, 0}, {0, 0, 0, 0, 0, 0, 0, 1}, {1, 1, 0, 0, 0, 0, 0, 1},
         {1, 0, 1, 1, 0, 0, 0, 1}, {0, 1, 1, 0, 1, 1, 1, 0} }, true);
 
+
     auto start = high_resolution_clock::now();
-    returnTriplet z = zero_forcing(G, psd_rule);
+    returnTriplet z = zero_forcing(G, forcing_rule);
     auto stop = high_resolution_clock::now();
     auto duration = duration_cast<microseconds>(stop - start);
     cout << duration.count() / 1000000.0 << endl;
