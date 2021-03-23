@@ -36,6 +36,16 @@ class graph
 		{
 			return edges;
 		}
+		vector<vector<int>> get_adj()
+		{
+			vector<vector<int>> adj(order,vector<int>(order,0));
+			for(int k=0; k<edges.size(); k++)
+			{
+				adj[edges[k].first][edges[k].second] = 1;
+				adj[edges[k].second][edges[k].first] = 1;
+			}
+			return adj;
+		}
 		vector<int> get_neighbors(int node)
 		{
 			vector<int> nbhd;

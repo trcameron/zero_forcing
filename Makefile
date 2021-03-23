@@ -13,7 +13,7 @@ zf_ga:
 	$(CCC) $(CCFLAGS) $(CCLNDIRS) -o zf_ga cpp/zero_forcing.cpp cpp/zf_ga.cpp $(CCLNFLAGS)
 	
 Source:
-	$(CCC) $(CCFLAGS) $(CCLNDIRS) -o Source cpp/Source.cpp $(CCLNFLAGS)
+	$(CCC) $(CCFLAGS) $(CCLNDIRS) -o Source cpp/zero_forcing.cpp cpp/Source.cpp $(CCLNFLAGS)
 	
 wavefront:
 	$(CCC) $(CCFLAGS) $(CCLNDIRS) -o wavefront cpp/zero_forcing.cpp cpp/wavefront.cpp $(CCLNFLAGS)
@@ -24,8 +24,8 @@ run_wavefront: wavefront
 run_zf_test: zf_test
 	$(NAUTY)/geng $(SIZE) | ./zf_test
 	
-run_zf_ga: zf_ga
-	$(NAUTY)/geng $(SIZE) | ./zf_ga
+run_Source: Source
+	$(NAUTY)/geng $(SIZE) | ./Source
 	
 #run_rand_test:
 #	$(PYTHON) python/rand_test.py
