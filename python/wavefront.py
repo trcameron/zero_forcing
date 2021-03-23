@@ -28,17 +28,19 @@ def closure(g,s):
         for v in g.neighbors(u):
             if(not colored[v]):  # vertex that is forced
                 # color v
-                colored[v] = 1
-                # update the number of colored neighbors for each vertex in s that is a neighbor of v. 
+                colored[v] = True
+                # update the number of colored neighbors for each colored vertex that is a neighbor of v. 
                 for w in g.neighbors(v):
                     if(colored[w]):
                         count[w] += 1
                         if(count[w]==(g.degree[w]-1)):  # update vertices that can do forcing
                             stack.append(w)
                 # update the number of colored neighbors of v
-                count[v] = sum([colored[u] for u in g.neighbors(v)])
+                count[v] = sum([colored[w] for w in g.neighbors(v)])
                 if(count[v]==(g.degree[v]-1)):
                     stack.append(v)
+                # break out of for v loop
+                break
     # return
     return frozenset([v for v in g.nodes if colored[v]])
 ###############################################

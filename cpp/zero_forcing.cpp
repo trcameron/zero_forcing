@@ -4,7 +4,7 @@
 #include <ilcplex/ilocplex.h>
 using namespace std;
 
-vector<vector<int>> read_graph6(const string line)
+graph read_graph6(const string line)
 {
 	int m = line.size();		// length of line
 	int data[m];				// data for graph
@@ -43,7 +43,24 @@ vector<vector<int>> read_graph6(const string line)
 			bits[i*6+(5-j)] = (edge[i]>>j) & 1;
 		}
 	}
+	// build graph
+	graph g(n);
+	int k = 0;
+	for(int j=1; j<n; j++)
+	{
+		for(int i=0; i<j; i++)
+		{
+			if(bits[k])
+			{
+				g.add_edge(make_pair(i,j));
+			}
+			k++;
+		}
+	}
+	// return graph
+	return g;
 	// initialize adjacency matrix
+	/*
 	vector<vector<int>> adj(n,vector<int>(n,0));
 	int k = 0;
 	for(int j=1; j<n; j++)
@@ -59,30 +76,24 @@ vector<vector<int>> read_graph6(const string line)
 		}
 	}
 	return adj;
+	*/
 }
 
-int zf_ip(vector<vector<int>> adj)
+int zf_ip(graph g)
 {
 	/* graph order */
-	int n = adj.size();
+	int n = g.get_order();
 	/* maximal propogation time */
 	int T = n-1;
-	/* graph edges */
+	/* directional edges */
 	vector<pair<int,int>> edges;
-	pair<int,int> e;
+	vector<pair<int,int>> ge = g.get_edges();
 	int m = 0;
-	for(int i=0; i<n; i++)
+	for(int k=0; k<ge.size(); k++)
 	{
-		for(int j=0; j<n; j++)
-		{
-			if(adj[i][j]==1)
-			{
-				e.first = i;
-				e.second = j;
-				edges.push_back(e);
-				m += 1;
-			}
-		}
+		edges.push_back(ge[k]);
+		edges.push_back(make_pair(ge[k].second,ge[k].first));
+		m += 2;
 	}
 	/* Ilo model, variables, constraints, and objective function*/
 	IloEnv env;
@@ -143,12 +154,14 @@ int zf_ip(vector<vector<int>> adj)
 	*/
 	for(int k=0; k<m; k++)
 	{
-		for(int w=0; w<n; w++)
+		vector<int> nbhd = g.get_neighbors(edges[k].first);
+		vector<int>::iterator w;
+		for(w=nbhd.begin(); w<nbhd.end(); w++)
 		{
-			if(w!=edges[k].second && adj[edges[k].first][w]==1)
+			if(*w != edges[k].second)
 			{
 				con.add(IloRange(env,-IloInfinity,T));
-				con[count].setLinearCoef(var[n+w],1);
+				con[count].setLinearCoef(var[n+*w],1);
 				con[count].setLinearCoef(var[n+edges[k].second],-1);
 				con[count].setLinearCoef(var[2*n+k],T+1);
 				count += 1;
@@ -164,11 +177,11 @@ int zf_ip(vector<vector<int>> adj)
     if(!cplex.solve())
 	{
        env.out() << "Failed to optimize LP" << endl;
-       throw(-1);
     }
 	/*
     env.out() << "Solution status = " << cplex.getStatus() << endl;
     env.out() << "Solution value  = " << cplex.getObjValue() << endl;
 	*/
-	return cplex.getObjValue();
+	// return
+	return round(cplex.getObjValue());
 }

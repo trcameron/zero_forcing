@@ -9,7 +9,6 @@ using namespace std;
 int main(int argc,char** argv)
 {
 	int count = 0;
-	vector<vector<int>> adj;
 	string line;
 	ifstream file;
 	if(argc > 1)
@@ -20,9 +19,12 @@ int main(int argc,char** argv)
 	auto start = chrono::high_resolution_clock::now();
 	while(getline(f,line))
 	{
-		adj = read_graph6(line);
-		int zf = zf_ip(adj);
+		graph g = read_graph6(line);
+		int zf = zf_ip(g);
 		count += 1;
+		g.print_nodes();
+		g.print_edges();
+		cout << "zf number: " << zf << "\n" << endl;
 		/*
 		int n = adj.size();
 		for(int i=0; i<n; i++)

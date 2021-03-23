@@ -9,23 +9,41 @@ boost_graph:
 zf_test:
 	$(CCC) $(CCFLAGS) $(CCLNDIRS) -o zf_test cpp/zero_forcing.cpp cpp/zf_test.cpp $(CCLNFLAGS)
 	
-nauty_graph6: zf_test
-	$(NAUTY)/geng $(SIZE) | ./zf_test
+zf_ga:
+	$(CCC) $(CCFLAGS) $(CCLNDIRS) -o zf_ga cpp/zero_forcing.cpp cpp/zf_ga.cpp $(CCLNFLAGS)
 	
-run_rand_test:
-	$(PYTHON) python/rand_test.py
-	
-run_small_test:
-	$(PYTHON) python/small_test.py
-	
-zf_test:
-	$(NAUTY)/geng $(SIZE) | $(PYTHON) python/zf_test.py
-	
-heuristic:
-	$(NAUTY)/geng $(SIZE) | $(PYTHON) python/heuristic.py
+Source:
+	$(CCC) $(CCFLAGS) $(CCLNDIRS) -o Source cpp/Source.cpp $(CCLNFLAGS)
 	
 wavefront:
+	$(CCC) $(CCFLAGS) $(CCLNDIRS) -o wavefront cpp/zero_forcing.cpp cpp/wavefront.cpp $(CCLNFLAGS)
+	
+run_wavefront: wavefront
+	$(NAUTY)/geng $(SIZE) | ./wavefront
+	
+run_zf_test: zf_test
+	$(NAUTY)/geng $(SIZE) | ./zf_test
+	
+run_zf_ga: zf_ga
+	$(NAUTY)/geng $(SIZE) | ./zf_ga
+	
+#run_rand_test:
+#	$(PYTHON) python/rand_test.py
+	
+#run_small_test:
+#	$(PYTHON) python/small_test.py
+	
+#zf_test:
+#	$(NAUTY)/geng $(SIZE) | $(PYTHON) python/zf_test.py
+	
+#heuristic:
+#	$(NAUTY)/geng $(SIZE) | $(PYTHON) python/heuristic.py
+	
+py_wavefront:
 	$(NAUTY)/geng $(SIZE) | $(PYTHON) python/wavefront.py
 	
 uninstall:
 	@rm -f zf_test
+	@rm -f zf_ga
+	@rm -f Source
+	@rm -f wavefront
