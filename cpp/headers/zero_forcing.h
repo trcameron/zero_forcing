@@ -11,11 +11,6 @@ class graph
 		vector<pair<int,int>> edges;
 		
 	public:
-		graph(){}
-		graph(int order0)
-		{
-			order = order0;
-		}
 		graph(int order0,vector<pair<int,int>> edges0)
 		{
 			order = order0;
@@ -23,10 +18,6 @@ class graph
 			{
 				edges.push_back(edges0[i]);
 			}
-		}
-		void add_edge(pair<int,int> e)
-		{
-			edges.push_back(e);
 		}
 		int get_order()
 		{

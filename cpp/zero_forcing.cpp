@@ -43,8 +43,8 @@ graph read_graph6(const string line)
 			bits[i*6+(5-j)] = (edge[i]>>j) & 1;
 		}
 	}
-	// build graph
-	graph g(n);
+	// build graph edges
+	vector<pair<int,int>> edges;
 	int k = 0;
 	for(int j=1; j<n; j++)
 	{
@@ -52,31 +52,14 @@ graph read_graph6(const string line)
 		{
 			if(bits[k])
 			{
-				g.add_edge(make_pair(i,j));
+				edges.push_back(make_pair(i,j));
 			}
 			k++;
 		}
 	}
+	
 	// return graph
-	return g;
-	// initialize adjacency matrix
-	/*
-	vector<vector<int>> adj(n,vector<int>(n,0));
-	int k = 0;
-	for(int j=1; j<n; j++)
-	{
-		for(int i=0; i<j; i++)
-		{
-			if(bits[k])
-			{
-				adj[i][j] = 1;
-				adj[j][i] = 1;
-			}
-			k++;
-		}
-	}
-	return adj;
-	*/
+	return graph(n,edges);
 }
 
 int zf_ip(graph g)
