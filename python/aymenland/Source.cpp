@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <chrono>
+#include <utility>
 using namespace std;
 using namespace std::chrono;
 
@@ -29,7 +30,7 @@ bool In(int vertex, const vector<int>& vertices) {
 }
 
 
-class Graph {
+/*class Graph {
     public:
     vector<string> colors;
     vector< vector<int>> adjacencies;
@@ -90,6 +91,14 @@ class Graph {
         }
     }
 
+    vector<int> add_isolated_vertices(int vertex) {
+        vertices.push_back(vertex);
+        vector<int> empty_lst;
+        adjacencies.push_back(empty_lst);
+        min_degree = 0;
+        colors.push_back("white");
+    }
+
     string getColor(int vertex) {
         for (int i = 0; i < vertices.size(); i++) {
             if (vertices[i] == vertex)
@@ -108,6 +117,104 @@ class Graph {
 
     void setAllColor(const string& color) {
         for (int i = 0; i < vertices.size(); i++)
+            colors[i] = color;
+    }
+};*/
+
+
+class Graph
+{
+protected:
+    int order;
+    vector<pair<int, int>> edges;
+    vector< vector<int>> neighbors;
+    vector<string> colors;
+
+public:
+    int max_degree;
+    int min_degree;
+
+    Graph() {}
+
+    Graph(int order0, const vector<pair<int, int>>& edges0)
+    {
+        order = order0;
+        for (int i = 0; i < edges0.size(); i++)
+        {
+            edges.push_back(edges0[i]);
+        }
+
+        neighbors = {};
+        max_degree = 0;
+        min_degree = 9999999;
+        for (int j = 0; j < order; j++) {
+            colors.push_back("white");
+            vector<int> nbhd;
+            for (int i = 0; i < edges.size(); i++) {
+                if (edges[i].first == j) {
+                    nbhd.push_back(edges[i].second);
+                }
+                else if (edges[i].second == j) {
+                    nbhd.push_back(edges[i].first);
+                }
+            }
+
+            if (nbhd.size() > max_degree)
+                max_degree = nbhd.size();
+            if (nbhd.size() < min_degree)
+                min_degree = nbhd.size();
+
+            neighbors.push_back(nbhd);
+        }
+    }
+    
+    int get_order() const
+    {
+        return order;
+    }
+
+    vector<pair<int, int>> get_edges() const
+    {
+        return edges;
+    }
+
+    vector<int> vertices() const {
+        vector<int> ret;
+        for (int i = 0; i < order; i++)
+            ret.push_back(i);
+
+        return ret;
+    }
+
+    vector<vector<int>> get_adj() const
+    {
+        vector<vector<int>> adj(order, vector<int>(order, 0));
+        for (int k = 0; k < edges.size(); k++)
+        {
+            adj[edges[k].first][edges[k].second] = 1;
+            adj[edges[k].second][edges[k].first] = 1;
+        }
+        return adj;
+    }
+
+    vector<int> adj(int node) const{
+        return neighbors[node];
+    }
+
+    int get_degree(int node) const {
+        return neighbors[node].size();
+    }
+
+    void setColor(int node, const string& color) {
+        colors[node] = color;
+    }
+
+    string getColor(int node) const {
+        return colors[node];
+    }
+
+    void setAllColor(const string& color) {
+        for (int i = 0; i < order; i++)
             colors[i] = color;
     }
 };
@@ -180,8 +287,7 @@ returnPair forcing_process(Graph& G, const vector<int>& b, bool (*rule)(Graph&, 
         for (int i = 0; i < b1.size(); i++)
             G.setColor(b1[i], blue);
 
-
-        if (b1.size() == G.vertices.size())
+        if (b1.size() == G.get_order())
             return { b1, t - 1 };
 
         vector<int> new_b = b1;
@@ -197,7 +303,7 @@ returnPair forcing_process(Graph& G, const vector<int>& b, bool (*rule)(Graph&, 
             }
         }
 
-        if (b1 == new_b || new_b.size() == G.vertices.size())
+        if (b1 == new_b || new_b.size() == G.get_order())
             return { new_b, t };
 
         b1 = new_b;
@@ -226,7 +332,7 @@ public:
         G = G1;
         rule = rule1;
         int k = rand() % (max_size - min_size + 1) + min_size;
-        sample(G.vertices, genes, k);
+        sample(G.vertices(), genes, k);
         t = 0;
         throttling_num = throttling_num1;
     }
@@ -237,7 +343,7 @@ public:
 
         returnPair res = forcing_process(G, genes, rule);
         int forcing = res.vertices.size();
-        if (forcing != G.vertices.size())
+        if (forcing != G.get_order())
             return -9999999;
         t = res.propagation;
         int result;
@@ -330,7 +436,7 @@ public:
 
     static void mutate_chromosome(Chromosome& chromosome, const Graph& G) {
         if ((rand() % 1000) / 1000.0 < mutation_rate) {
-            vector<int> lst = G.vertices;
+            vector<int> lst = G.vertices();
             //lst.insert(lst.end(), chromosome.genes.begin(), chromosome.genes.end());   add this line to make the chromosome's genes have twice the chance of being picked
             int n = lst.size();
             int k = rand() % (max_size - min_size + 1) + min_size;
@@ -380,13 +486,15 @@ struct returnTriplet {
 };
 returnTriplet zero_forcing(Graph& G, bool (*rule)(Graph&, int, const vector<int>&) = &forcing_rule, bool throttling_num = false) {
     /* Applies a Genetic Algorithm to the given graph in order to find its minimal zero-forcing set, and therefore zero-forcing number. Returns the zero-forcing number, propagation number, and zero-forcing set */
-    if (G.edges.size() == 0)
-        return { (int) G.vertices.size() , 0, G.vertices, (int) G.vertices.size()};
+    int n = G.get_order();
+    int e = G.get_edges().size();
+    
+    if (e == 0)
+        return {n , 0, G.vertices(), n};
 
-    int n = G.vertices.size();
     max_size = min(n * G.max_degree / (G.max_degree + 1), n - 1);
-    min_size = G.edges.size() / n;
-    double target_gen = max(37.708025691857216 * G.vertices.size() + 0.6188752011422203 * G.edges.size() - 255.01828721571377, 30.0);
+    min_size = e / n;
+    double target_gen = max(37.708025691857216 * n + 0.6188752011422203 * e - 255.01828721571377, 30.0);
     srand(time(NULL));
 
     Population population(population_size, G, rule, throttling_num);
@@ -416,10 +524,7 @@ returnTriplet zero_forcing(Graph& G, bool (*rule)(Graph&, int, const vector<int>
 
 
 int main() {
-    //Graph G({ {1, 1}, {6, 6}, {2, 2}, {3, 3}, {4, 4} });
-    Graph G({ {0, 0, 0, 0, 0, 1, 1, 0} , {0, 0, 0, 0, 0, 1, 0, 1}, {0, 0, 0, 0, 0, 0, 1, 1}, {0, 0, 0, 0, 0, 0, 1, 0}, {0, 0, 0, 0, 0, 0, 0, 1}, {1, 1, 0, 0, 0, 0, 0, 1},
-        {1, 0, 1, 1, 0, 0, 0, 1}, {0, 1, 1, 0, 1, 1, 1, 0} }, true);
-
+    Graph G(9, { {0, 1}, {1, 2}, { 2, 3 }, { 3, 4 }, { 4, 5 }, { 5, 6 }, {6, 7} , {7, 8} });
 
     auto start = high_resolution_clock::now();
     returnTriplet z = zero_forcing(G, forcing_rule);
