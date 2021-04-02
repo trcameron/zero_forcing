@@ -6,83 +6,119 @@ using namespace std;
 /* Graph Class */
 class graph
 {
-	protected:
-		int order;
-		vector<pair<int,int>> edges;
-		
-	public:
-		graph(int order0,vector<pair<int,int>> edges0)
+protected:
+    int order;
+    vector<pair<int, int>> edges;
+    vector< vector<int>> neighbors;
+    vector<string> colors;
+
+public:
+    int max_degree;
+    int min_degree;
+
+    graph() {}
+
+    graph(int order0, const vector<pair<int, int>>& edges0)
+    {
+        order = order0;
+        for (int i = 0; i < edges0.size(); i++)
+        {
+            edges.push_back(edges0[i]);
+        }
+
+        neighbors = {};
+        max_degree = 0;
+        min_degree = 9999999;
+        for (int j = 0; j < order; j++) {
+            colors.push_back("white");
+            vector<int> nbhd;
+            for (int i = 0; i < edges.size(); i++) {
+                if (edges[i].first == j) {
+                    nbhd.push_back(edges[i].second);
+                }
+                else if (edges[i].second == j) {
+                    nbhd.push_back(edges[i].first);
+                }
+            }
+
+            if (nbhd.size() > max_degree)
+                max_degree = nbhd.size();
+            if (nbhd.size() < min_degree)
+                min_degree = nbhd.size();
+
+            neighbors.push_back(nbhd);
+        }
+    }
+    
+    int get_order() const
+    {
+        return order;
+    }
+
+    vector<pair<int, int>> get_edges() const
+    {
+        return edges;
+    }
+
+    vector<int> vertices() const {
+        vector<int> ret;
+        for (int i = 0; i < order; i++)
+            ret.push_back(i);
+
+        return ret;
+    }
+
+    vector<vector<int>> get_adj() const
+    {
+        vector<vector<int>> adj(order, vector<int>(order, 0));
+        for (int k = 0; k < edges.size(); k++)
+        {
+            adj[edges[k].first][edges[k].second] = 1;
+            adj[edges[k].second][edges[k].first] = 1;
+        }
+        return adj;
+    }
+
+    vector<int> adj(int node) const{
+        return neighbors[node];
+    }
+
+    int get_degree(int node) const {
+        return neighbors[node].size();
+    }
+
+    void setColor(int node, const string& color) {
+        colors[node] = color;
+    }
+
+    string getColor(int node) const {
+        return colors[node];
+    }
+
+    void setAllColor(const string& color) {
+        for (int i = 0; i < order; i++)
+            colors[i] = color;
+    }
+	
+	void print_nodes()
+	{
+		cout << "nodes: ";
+		for(int i=0; i<order; i++)
 		{
-			order = order0;
-			for(int i=0; i<edges0.size(); i++)
-			{
-				edges.push_back(edges0[i]);
-			}
+			cout << i << " ";
 		}
-		int get_order()
+		cout << endl;
+	}
+	
+	void print_edges()
+	{
+		cout << "edges: ";
+		for(int i=0; i<edges.size(); i++)
 		{
-			return order;
+			cout << "(" << edges[i].first << "," << edges[i].second << ")" << " ";
 		}
-		vector<pair<int,int>> get_edges()
-		{
-			return edges;
-		}
-		vector<vector<int>> get_adj()
-		{
-			vector<vector<int>> adj(order,vector<int>(order,0));
-			for(int k=0; k<edges.size(); k++)
-			{
-				adj[edges[k].first][edges[k].second] = 1;
-				adj[edges[k].second][edges[k].first] = 1;
-			}
-			return adj;
-		}
-		vector<int> get_neighbors(int node)
-		{
-			vector<int> nbhd;
-			for(int i=0;i<edges.size();i++)
-			{
-				if(edges[i].first==node)
-				{
-					nbhd.push_back(edges[i].second);
-				}
-				else if(edges[i].second==node)
-				{
-					nbhd.push_back(edges[i].first);
-				}
-			}
-			return nbhd;
-		}
-		int get_degree(int node)
-		{
-			int deg = 0;
-			for(int i=0; i<edges.size(); i++)
-			{
-				if(edges[i].first==node || edges[i].second==node)
-				{
-					deg += 1;
-				}
-			}
-			return deg;
-		}
-		void print_nodes()
-		{
-			cout << "nodes: ";
-			for(int i=0; i<order; i++)
-			{
-				cout << i << " ";
-			}
-			cout << endl;
-		}
-		void print_edges()
-		{
-			cout << "edges: ";
-			for(int i=0; i<edges.size(); i++)
-			{
-				cout << "(" << edges[i].first << "," << edges[i].second << ")" << " ";
-			}
-			cout << endl;
-		}
+		cout << endl;
+	}
 };
 
 graph read_graph6(const string line);

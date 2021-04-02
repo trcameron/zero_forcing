@@ -1,12 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include <string>
-#include <iterator>
-#include <algorithm>
 #include <random>
-#include <stdlib.h>
-#include <time.h>
 #include <chrono>
 #include <zero_forcing.h>
 using namespace std;
@@ -15,9 +10,9 @@ using namespace std::chrono;
 
 void sample(const vector<int>& vertices, vector<int>& newVector, int k) {
     vector<int> v = vertices;
-	std::random_device rd;
-	std::mt19937 g(rd());
-	std::shuffle(v.begin(), v.end(), g);
+	random_device rd;
+	mt19937 g(rd());
+	shuffle(v.begin(), v.end(), g);
     for (int i = k; i--; )
         newVector.push_back(v[i]);
 }
@@ -32,92 +27,7 @@ bool In(int vertex, const vector<int>& vertices) {
     return false;
 }
 
-
-class Graph {
-    public:
-    vector<string> colors;
-    vector< vector<int>> adjacencies;
-    int min_degree;
-    int max_degree;
-    vector<int> vertices;
-    vector< vector<int>> edges;
-
-    Graph(const vector< vector<int>>& edges1, bool adj_matrix = false) {
-        if (!adj_matrix)
-            edges = edges1;
-        else
-            for (int i = 0; i < edges1.size(); ++i)
-                for (int j = i; j < edges1[0].size(); ++j)
-                    if (edges1[i][j] != 0)
-                        edges.push_back({ i, j });
-
-        for (int i = 0; i < edges.size(); i++) {
-            if (!In(edges[i][0], vertices)) {
-                vertices.push_back(edges[i][0]);
-                colors.push_back("white");
-            }
-            if (!In(edges[i][1], vertices)) {
-                vertices.push_back(edges[i][1]);
-                colors.push_back("white");
-            }
-        }
-
-        min_degree = 9999;
-        max_degree = 0;
-
-        for (int i = 0; i < vertices.size(); i++) {
-            vector<int> lst;
-            for (int j = 0; j < edges.size(); j++) {
-                if (vertices[i] == edges[j][0]) {
-                    if (!In(edges[j][1], lst) && edges[j][1] != edges[j][0])
-                        lst.push_back(edges[j][1]);
-                }
-                else if (vertices[i] == edges[j][1])
-                    if (!In(edges[j][0], lst) && edges[j][0] != edges[j][1])
-                        lst.push_back(edges[j][0]);
-            }
-
-            if (lst.size() < min_degree)
-                min_degree = lst.size();
-            if (lst.size() > max_degree)
-                max_degree = lst.size();
-            adjacencies.push_back(lst);
-        }
-    }
-
-    Graph(){}
-
-    vector<int> adj(int vertex) {
-        for (int i = 0; i < vertices.size(); i++) {
-            if (vertices[i] == vertex)
-                return adjacencies[i];
-        }
-    }
-
-    string getColor(int vertex) {
-        for (int i = 0; i < vertices.size(); i++) {
-            if (vertices[i] == vertex)
-                return colors[i];
-        }
-    }
-
-    void setColor(int vertex, const string& color) {
-        for (int i = 0; i < vertices.size(); i++) {
-            if (vertices[i] == vertex) {
-                colors[i] = color;
-                return;
-            }
-        }
-    }
-
-    void setAllColor(const string& color) {
-        for (int i = 0; i < vertices.size(); i++)
-            colors[i] = color;
-    }
-};
-
-
-bool forcing_rule(Graph& G, int node0, const vector<int>& b) {
+bool forcing_rule(graph& G, int node0, const vector<int>& b) {
     /* Returns True if, given a graph and a set of blue vertices b, nodes0 will be forced blue in the next iteration. Returns False otherwise. */
 
     if (G.getColor(node0) == "blue")
@@ -143,7 +53,7 @@ bool forcing_rule(Graph& G, int node0, const vector<int>& b) {
 }
 
 
-bool psd_rule(Graph& G, int node0, const vector<int>& b) {
+bool psd_rule(graph& G, int node0, const vector<int>& b) {
     /* Returns True if, given a graph and a set of blue vertices b, nodes0 will be forced blue in the next iteration
     using the PSD forcing rule.
     Returns False otherwise. */
@@ -176,7 +86,7 @@ struct returnPair {
     vector<int> vertices;
     int propagation;
 };
-returnPair forcing_process(Graph& G, const vector<int>& b, bool (*rule)(Graph&, int, const vector<int>&) = &forcing_rule, int t = 1) {
+returnPair forcing_process(graph& G, const vector<int>& b, bool (*rule)(graph&, int, const vector<int>&) = &forcing_rule, int t = 1) {
     /* Applies the forcing rule given to the given graph with the given initial set of blue vertices b. Once the forcing process is done, returns the final set of blue vertices. */
     vector<int> b1 = b;
     while (true) {
@@ -184,8 +94,7 @@ returnPair forcing_process(Graph& G, const vector<int>& b, bool (*rule)(Graph&, 
         for (int i = 0; i < b1.size(); i++)
             G.setColor(b1[i], blue);
 
-
-        if (b1.size() == G.vertices.size())
+        if (b1.size() == G.get_order())
             return { b1, t - 1 };
 
         vector<int> new_b = b1;
@@ -201,7 +110,7 @@ returnPair forcing_process(Graph& G, const vector<int>& b, bool (*rule)(Graph&, 
             }
         }
 
-        if (b1 == new_b || new_b.size() == G.vertices.size())
+        if (b1 == new_b || new_b.size() == G.get_order())
             return { new_b, t };
 
         b1 = new_b;
@@ -219,18 +128,18 @@ int min_size, max_size;
 
 class Chromosome {
 public:
-    Graph G;
-    bool (*rule)(Graph&, int, const vector<int>&);
+    graph G;
+    bool (*rule)(graph&, int, const vector<int>&);
     vector<int> genes;
     int fitness;
     int t;
     bool throttling_num;
 
-    Chromosome(Graph& G1, bool (*rule1)(Graph&, int, const vector<int>&) = &forcing_rule, bool throttling_num1 = false) {
+    Chromosome(graph& G1, bool (*rule1)(graph&, int, const vector<int>&) = &forcing_rule, bool throttling_num1 = false) {
         G = G1;
         rule = rule1;
         int k = rand() % (max_size - min_size + 1) + min_size;
-        sample(G.vertices, genes, k);
+        sample(G.vertices(), genes, k);
         t = 0;
         throttling_num = throttling_num1;
     }
@@ -241,7 +150,7 @@ public:
 
         returnPair res = forcing_process(G, genes, rule);
         int forcing = res.vertices.size();
-        if (forcing != G.vertices.size())
+        if (forcing != G.get_order())
             return -9999999;
         t = res.propagation;
         int result;
@@ -274,7 +183,7 @@ class Population {
 public:
     vector<Chromosome> chromosomes;
 
-    Population(int size, Graph& G1, bool (*rule1)(Graph&, int, const vector<int>&) = &forcing_rule, bool throttling_num = false) {
+    Population(int size, graph& G1, bool (*rule1)(graph&, int, const vector<int>&) = &forcing_rule, bool throttling_num = false) {
         for (int i = 0; i < size; i++)
             chromosomes.push_back(Chromosome(G1, rule1, throttling_num));
     }
@@ -283,7 +192,7 @@ public:
 
 class GeneticAlgorithm {
 public:
-    static Population evolve(Population& pop, Graph& G, bool (*rule)(Graph&, int, const vector<int>&) = &forcing_rule, bool throttling_num = false) {
+    static Population evolve(Population& pop, graph& G, bool (*rule)(graph&, int, const vector<int>&) = &forcing_rule, bool throttling_num = false) {
         Population pop1 = GeneticAlgorithm::crossover_population(pop, G, rule, throttling_num);
         Population pop2 = GeneticAlgorithm::mutate_population(pop1, G);
         for (int i = 0; i < pop2.chromosomes.size(); i++)
@@ -292,7 +201,7 @@ public:
     }
 
 
-    static Population crossover_population(const Population& pop, Graph& G, bool (*rule)(Graph&, int, const vector<int>&) = &forcing_rule, bool throttling_num = false) {
+    static Population crossover_population(const Population& pop, graph& G, bool (*rule)(graph&, int, const vector<int>&) = &forcing_rule, bool throttling_num = false) {
         Population crossover_pop(0, G, rule, throttling_num);
         for (int i = 0; i < num_of_elite_chrom; i++)
             crossover_pop.chromosomes.push_back(pop.chromosomes[i]);
@@ -308,14 +217,14 @@ public:
     }
 
 
-    static Population mutate_population(Population& pop, const Graph& G) {
+    static Population mutate_population(Population& pop, const graph& G) {
         for (int i = num_of_elite_chrom; i < population_size; i++)
             GeneticAlgorithm::mutate_chromosome(pop.chromosomes[i], G);
         return pop;
     }
 
 
-    static Chromosome crossover_chromosomes(const Chromosome& chromosome1, const Chromosome& chromosome2, Graph& G, bool (*rule)(Graph&, int, const vector<int>&) = &forcing_rule, bool throttling_num = false) {
+    static Chromosome crossover_chromosomes(const Chromosome& chromosome1, const Chromosome& chromosome2, graph& G, bool (*rule)(graph&, int, const vector<int>&) = &forcing_rule, bool throttling_num = false) {
         Chromosome crossover_chrom(G, rule, throttling_num);
         crossover_chrom.genes = {};
         int n1 = chromosome1.genes.size(), n2 = chromosome2.genes.size();
@@ -332,9 +241,9 @@ public:
     }
 
 
-    static void mutate_chromosome(Chromosome& chromosome, const Graph& G) {
+    static void mutate_chromosome(Chromosome& chromosome, const graph& G) {
         if ((rand() % 1000) / 1000.0 < mutation_rate) {
-            vector<int> lst = G.vertices;
+            vector<int> lst = G.vertices();
             //lst.insert(lst.end(), chromosome.genes.begin(), chromosome.genes.end());   add this line to make the chromosome's genes have twice the chance of being picked
             int n = lst.size();
             int k = rand() % (max_size - min_size + 1) + min_size;
@@ -346,7 +255,7 @@ public:
     }
 
 
-    static vector<Chromosome> select_tournament_population(const Population& pop, bool (*rule)(Graph&, int, const vector<int>&) = &forcing_rule) {
+    static vector<Chromosome> select_tournament_population(const Population& pop, bool (*rule)(graph&, int, const vector<int>&) = &forcing_rule) {
         vector<Chromosome> tournament_pop;
         int i = 0;
         while (i < tournament_selection_size) {
@@ -382,15 +291,17 @@ struct returnTriplet {
     vector<int> zero_forcing_set;
     int throttling_num;
 };
-returnTriplet zero_forcing(Graph& G, bool (*rule)(Graph&, int, const vector<int>&) = &forcing_rule, bool throttling_num = false) {
+returnTriplet zero_forcing(graph& G, bool (*rule)(graph&, int, const vector<int>&) = &forcing_rule, bool throttling_num = false) {
     /* Applies a Genetic Algorithm to the given graph in order to find its minimal zero-forcing set, and therefore zero-forcing number. Returns the zero-forcing number, propagation number, and zero-forcing set */
-    if (G.edges.size() == 0)
-        return { (int) G.vertices.size() , 0, G.vertices, (int) G.vertices.size()};
+    int n = G.get_order();
+    int e = G.get_edges().size();
+    
+    if (e == 0)
+        return {n , 0, G.vertices(), n};
 
-    int n = G.vertices.size();
     max_size = min(n * G.max_degree / (G.max_degree + 1), n - 1);
-    min_size = G.edges.size() / n;
-    double target_gen = max(37.708025691857216 * G.vertices.size() + 0.6188752011422203 * G.edges.size() - 255.01828721571377, 30.0);
+    min_size = e / n;
+    double target_gen = max(37.708025691857216 * n + 0.6188752011422203 * e - 255.01828721571377, 30.0);
     srand(time(NULL));
 
     Population population(population_size, G, rule, throttling_num);
@@ -418,7 +329,6 @@ returnTriplet zero_forcing(Graph& G, bool (*rule)(Graph&, int, const vector<int>
     return { (int)population.chromosomes[0].genes.size(), population.chromosomes[0].t, population.chromosomes[0].genes, (int)population.chromosomes[0].genes.size() + population.chromosomes[0].t };
 }
 
-
 int main(int argc,char** argv)
 {
 	int count = 0;
@@ -434,9 +344,7 @@ int main(int argc,char** argv)
 	while(getline(f,line))
 	{
 		graph g = read_graph6(line);
-		Graph G(g.get_adj(),true);
-		cout << G.vertices.size() << endl;
-		returnTriplet z = zero_forcing(G, forcing_rule);
+		returnTriplet z = zero_forcing(g, forcing_rule);
 		count += 1;
 		g.print_nodes();
 		g.print_edges();

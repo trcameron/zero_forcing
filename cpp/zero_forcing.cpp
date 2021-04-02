@@ -137,7 +137,7 @@ int zf_ip(graph g)
 	*/
 	for(int k=0; k<m; k++)
 	{
-		vector<int> nbhd = g.get_neighbors(edges[k].first);
+		vector<int> nbhd = g.adj(edges[k].first);
 		vector<int>::iterator w;
 		for(w=nbhd.begin(); w<nbhd.end(); w++)
 		{

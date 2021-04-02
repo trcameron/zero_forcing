@@ -26,7 +26,7 @@ void closure(graph g,set<int,less<int>> &s)
 	}
 	for(it=s.begin(); it!=s.end(); it++)
 	{
-		vector<int> nbhd = g.get_neighbors(*it);
+		vector<int> nbhd = g.adj(*it);
 		for(int j=0; j<nbhd.size(); j++)
 		{
 			count[*it] += colored[nbhd[j]];
@@ -40,14 +40,14 @@ void closure(graph g,set<int,less<int>> &s)
 	while(!active.empty())
 	{
 		int u = active.top(); active.pop();		// vertex that forces
-		vector<int> nbhd = g.get_neighbors(u);	// neighborhood of forcing vertex
+		vector<int> nbhd = g.adj(u);			// neighborhood of forcing vertex
 		for(int i=0; i<nbhd.size(); i++)
 		{
 			if(!colored[nbhd[i]])				// vertex that is forced
 			{
 				colored[nbhd[i]] = true;		// color vertex
 				s.insert(nbhd[i]);				// add to set for closure
-				vector<int> nbhd2 = g.get_neighbors(nbhd[i]);	// neighborhood of forced vertex
+				vector<int> nbhd2 = g.adj(nbhd[i]);	// neighborhood of forced vertex
 				// update the number of colored neighbors for each colored vertex in nbhd2
 				for(int j=0; j<nbhd2.size(); j++)
 				{
@@ -106,7 +106,7 @@ int wavefront(graph g)
 				}
 				//update r_new with max((nbhd-s_new).size()-1,0), also add nbhd to s_new
 				int count = -1;
-				vector<int> nbhd = g.get_neighbors(k);
+				vector<int> nbhd = g.adj(k);
 				for(int l=0; l<nbhd.size(); l++)
 				{
 					if(s_new.find(nbhd[l])==s_new.end())

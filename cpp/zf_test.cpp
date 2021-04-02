@@ -3,7 +3,6 @@
 #include <chrono>
 #include <vector>
 #include <zero_forcing.h>
-#include <ilcplex/ilocplex.h>
 using namespace std;
 
 int main(int argc,char** argv)
@@ -22,20 +21,10 @@ int main(int argc,char** argv)
 		graph g = read_graph6(line);
 		int zf = zf_ip(g);
 		count += 1;
+		/*
 		g.print_nodes();
 		g.print_edges();
 		cout << "zf number: " << zf << "\n" << endl;
-		/*
-		int n = adj.size();
-		for(int i=0; i<n; i++)
-		{
-			for(int j=0; j<n; j++)
-			{
-				cout << adj[i][j] <<  " ";
-			}
-			cout << endl;
-		}
-		cout << endl;
 		*/
 	}
 	file.close();
