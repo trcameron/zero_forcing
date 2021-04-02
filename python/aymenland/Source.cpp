@@ -492,7 +492,7 @@ returnTriplet zero_forcing(Graph& G, bool (*rule)(Graph&, int, const vector<int>
     if (e == 0)
         return {n , 0, G.vertices(), n};
 
-    max_size = min(n * G.max_degree / (G.max_degree + 1), n - 1);
+    max_size = n;
     min_size = e / n;
     double target_gen = max(37.708025691857216 * n + 0.6188752011422203 * e - 255.01828721571377, 30.0);
     srand(time(NULL));
@@ -524,8 +524,7 @@ returnTriplet zero_forcing(Graph& G, bool (*rule)(Graph&, int, const vector<int>
 
 
 int main() {
-    Graph G(9, { {0, 1}, {1, 2}, { 2, 3 }, { 3, 4 }, { 4, 5 }, { 5, 6 }, {6, 7} , {7, 8} });
-
+    Graph G(3, { {0, 2} });
     auto start = high_resolution_clock::now();
     returnTriplet z = zero_forcing(G, forcing_rule);
     auto stop = high_resolution_clock::now();
