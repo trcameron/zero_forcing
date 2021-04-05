@@ -7,7 +7,6 @@
 using namespace std;
 using namespace std::chrono;
 
-
 void sample(const vector<int>& vertices, vector<int>& newVector, int k) {
     vector<int> v = vertices;
 	random_device rd;
@@ -16,7 +15,6 @@ void sample(const vector<int>& vertices, vector<int>& newVector, int k) {
     for (int i = k; i--; )
         newVector.push_back(v[i]);
 }
-
 
 bool In(int vertex, const vector<int>& vertices) {
     /* Returns true if vertex is not in vertices, false otherwise */
@@ -51,7 +49,6 @@ bool forcing_rule(graph& G, int node0, const vector<int>& b) {
 
     return false;
 }
-
 
 bool psd_rule(graph& G, int node0, const vector<int>& b) {
     /* Returns True if, given a graph and a set of blue vertices b, nodes0 will be forced blue in the next iteration
@@ -299,7 +296,7 @@ returnTriplet zero_forcing(graph& G, bool (*rule)(graph&, int, const vector<int>
     if (e == 0)
         return {n , 0, G.vertices(), n};
 
-    max_size = min(n * G.max_degree / (G.max_degree + 1), n - 1);
+    max_size = n;
     min_size = e / n;
     double target_gen = max(37.708025691857216 * n + 0.6188752011422203 * e - 255.01828721571377, 30.0);
     srand(time(NULL));

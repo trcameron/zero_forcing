@@ -1,6 +1,7 @@
 #ifndef ZERO_FORCING_H
 #define ZERO_FORCING_H
 #include <vector>
+#include <set>
 using namespace std;
 
 /* Graph Class */
@@ -120,8 +121,20 @@ public:
 		cout << endl;
 	}
 };
-
+/* read graph6 */
 graph read_graph6(const string line);
+/* Zero Forcing IP */
 int zf_ip(graph g);
+/* Zero Forcing Wavefront */
+int zf_wave(graph g);
+// returnTriplet Structure
+struct returnTriplet {
+    int zero_forcing_num;
+    int propagation;
+    vector<int> zero_forcing_set;
+    int throttling_num;
+};
+/* Zero Forcing GA */
+returnTriplet zf_ga(graph& G);
 
 #endif

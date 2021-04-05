@@ -75,7 +75,6 @@ void closure(graph g,set<int,less<int>> &s)
 		}			
 	}
 }
-
 /* Wavefront */
 int wavefront(graph g)
 {
@@ -144,37 +143,7 @@ int wavefront(graph g)
 
 /* main function */
 int main(int argc,char** argv)
-{
-	/*
-	graph g(4,{{0,2},{0,3},{1,3}});
-	
-	g.print_nodes();
-	g.print_edges();
-	
-	vector<int> nbhd = g.get_neighbors(2);
-	cout << "nbhd of 2: ";
-	for(int i=0; i<nbhd.size(); i++)
-	{
-		cout << nbhd[i] << " ";
-	}
-	cout << endl;
-	cout << "deg of 2: " << g.get_degree(2) << endl;
-	
-	set<int,less<int>> s = {2};
-	set<int,less<int>>::iterator it;
-	closure(g,s);
-	cout << "closure of {2}: ";
-	for(it=s.begin(); it!=s.end(); it++)
-	{
-		cout << *it << " ";
-	}
-	cout << endl;
-	
-	int zf = wavefront(g);
-	cout << "zf number: " << zf << endl;
-	return 0;
-	*/
-	
+{	
 	int count = 0;
 	vector<vector<int>> adj;
 	string line;
