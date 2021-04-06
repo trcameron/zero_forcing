@@ -2,6 +2,7 @@
 #include <iostream>
 #include <random>
 #include <vector>
+#include <set>
 #include <zero_forcing.h>
 using namespace std;
 
@@ -298,7 +299,51 @@ int zf_wave(graph g)
 	}
 	return 0;
 }
-
+/* Zero Forcing Heuristic */
+set<int,less<int>> heuristic(graph g)
+{
+	// initialize set iterator
+	set<int,less<int>>::iterator it;
+	// initialize colored set and closure
+	set<int,less<int>> z, c;
+	// while z is not a zero-forcing set
+	while(c.size() != g.get_order())
+	{
+		// find vertex that maximizes closure
+		int a;
+		set<int,less<int>> c_new;
+		for(int v=0; v<g.get_order(); v++)
+		{
+			if(c.find(v)==c.end())
+			{
+				set<int,less<int>> s(c);
+				s.insert(v);
+				closure(g,s);
+				if(s.size() > c_new.size())
+				{
+					a = v;
+					c_new = s;
+				}
+			}
+		}
+		// update closure and add vertex
+		c = c_new;
+		z.insert(a);
+		// check if any vertices can be removed from coloring
+		set<int,less<int>> z_new(z);
+		for(it=z_new.begin(); it!=z_new.end(); it++)
+		{
+			z.erase(*it);
+			closure(g,z);
+			if(z.size() != g.get_order())
+			{
+				z.insert(*it);
+			}
+		}
+	}
+	// return
+	return z;
+}
 
 
 

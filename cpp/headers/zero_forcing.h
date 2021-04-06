@@ -127,6 +127,8 @@ graph read_graph6(const string line);
 int zf_ip(graph g);
 /* Zero Forcing Wavefront */
 int zf_wave(graph g);
+/* Zero Forcing Heuristic */
+set<int,less<int>> heuristic(graph g);
 // returnTriplet Structure
 struct returnTriplet {
     int zero_forcing_num;

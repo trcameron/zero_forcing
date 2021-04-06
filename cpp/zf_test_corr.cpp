@@ -5,7 +5,6 @@ using namespace std;
 
 int main(int argc,char** argv)
 {
-	int count = 0;
 	string line;
 	ifstream file;
 	if(argc > 1)
@@ -13,6 +12,7 @@ int main(int argc,char** argv)
 		file.open(argv[1]);
 	}
 	istream &f = (argc > 1 ? file : cin);
+	int count =0, corr_wave = 0, corr_ga = 0;
 	while(getline(f,line))
 	{
 		graph g = read_graph6(line);
@@ -20,20 +20,22 @@ int main(int argc,char** argv)
 		int zf2 = zf_wave(g);
 		returnTriplet z = zf_ga(g);
 		int zf3 = z.zero_forcing_num;
-		if(zf1 != zf2)
+		if(zf2 == zf1)
 		{
-			cout << "IP and Wavefront disagree." << endl;
-			cout << "ZF_IP = " << zf1 << endl;
-			cout << "ZF_Wave = " << zf2 << endl;
+			corr_wave += 1;
 		}
-		if(zf1 != zf3)
+		if(zf3 == zf1)
 		{
-			cout << "IP and GA disagree." << endl;
-			cout << "ZF_IP = " << zf1 << endl;
-			cout << "ZF_GA = " << zf3 << endl;	
+			corr_ga += 1;
 		}
 		count += 1;
 	}
 	file.close();
+	
+	double pcorr_wave = static_cast<double>(corr_wave)/static_cast<double>(count);
+	double pcorr_ga = static_cast<double>(corr_ga)/static_cast<double>(count);
+	
+	cout << setprecision(3) << pcorr_wave << ", " << pcorr_ga << endl;
+	
 	return 0;
 }

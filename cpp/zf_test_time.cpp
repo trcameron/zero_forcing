@@ -21,7 +21,7 @@ int main(int argc,char** argv)
 		graph g = read_graph6(line);
 		
 		auto start = chrono::high_resolution_clock::now();
-		int zf1 = zf_ip(g);
+		//int zf1 = zf_ip(g);
 		auto stop = chrono::high_resolution_clock::now();
 		auto duration = duration_cast<chrono::microseconds>(stop - start);
 		time_ip.push_back(duration.count());
@@ -38,6 +38,7 @@ int main(int argc,char** argv)
 		duration = duration_cast<chrono::microseconds>(stop - start);
 		time_ga.push_back(duration.count());
 	}
+	
 	file.close();
 	
 	double avgtime_ip=0, avgtime_wave=0, avgtime_ga=0;
@@ -50,7 +51,8 @@ int main(int argc,char** argv)
 	avgtime_ip = avgtime_ip/time_ip.size();
 	avgtime_wave = avgtime_wave/time_ip.size();
 	avgtime_ga = avgtime_ga/time_ip.size();
+
+	cout << scientific << setprecision(3) << avgtime_ip << ", " << avgtime_wave << ", " << avgtime_ga << endl;
 	
-	cout << "Avg IP Time: " << avgtime_ip << ", Avg Wave Time: " << avgtime_wave << ", Avg GA Time: " << avgtime_ga << endl;
 	return 0;
 }
