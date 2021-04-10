@@ -65,7 +65,7 @@ graph read_graph6(const string line)
 	return graph(n,edges);
 }
 /* Zero Forcing IP */
-int zf_ip(graph g)
+int zf_ip(graph& g)
 {
 	/* graph order */
 	int n = g.get_order();
@@ -168,7 +168,7 @@ int zf_ip(graph g)
 	return round(cplex.getObjValue());
 }
 /* Graph Closure */
-void closure(graph g,set<int,less<int>> &s)
+void closure(graph& g,set<int,less<int>> &s)
 {
 	/* set iterator */
 	set<int,less<int>>::iterator it;
@@ -235,7 +235,7 @@ void closure(graph g,set<int,less<int>> &s)
 	}
 }
 /* Wavefront */
-int zf_wave(graph g)
+int zf_wave(graph& g)
 {
 	// graph order
 	int order = g.get_order();
@@ -300,7 +300,7 @@ int zf_wave(graph g)
 	return 0;
 }
 /* Zero Forcing Heuristic */
-set<int,less<int>> heuristic(graph g)
+set<int,less<int>> heuristic(graph& g)
 {
 	// initialize set iterator
 	set<int,less<int>>::iterator it;
