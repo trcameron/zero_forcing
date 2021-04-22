@@ -12,11 +12,10 @@ using namespace std;
 using namespace std::chrono;
 
 
-void sample(const vector<int>& vertices, vector<int>& newVector, int k) {
-    vector<int> v = vertices;
-    random_shuffle(v.begin(), v.end());
+void sample(vector<int>& vertices, vector<int>& newVector, int k) {
+    random_shuffle(vertices.begin(), vertices.end());
     for (int i = k; i--; )
-        newVector.push_back(v[i]);
+        newVector.push_back(vertices[i]);
 }
 
 
@@ -30,107 +29,15 @@ bool In(int vertex, const vector<int>& vertices) {
 }
 
 
-/*class Graph {
-    public:
-    vector<string> colors;
-    vector< vector<int>> adjacencies;
-    int min_degree;
-    int max_degree;
-    vector<int> vertices;
-    vector< vector<int>> edges;
-
-    Graph(const vector< vector<int>>& edges1, bool adj_matrix = false) {
-        if (!adj_matrix)
-            edges = edges1;
-        else
-            for (int i = 0; i < edges1.size(); ++i)
-                for (int j = i; j < edges1[0].size(); ++j)
-                    if (edges1[i][j] != 0)
-                        edges.push_back({ i, j });
-
-        for (int i = 0; i < edges.size(); i++) {
-            if (!In(edges[i][0], vertices)) {
-                vertices.push_back(edges[i][0]);
-                colors.push_back("white");
-            }
-            if (!In(edges[i][1], vertices)) {
-                vertices.push_back(edges[i][1]);
-                colors.push_back("white");
-            }
-        }
-
-        min_degree = 9999;
-        max_degree = 0;
-
-        for (int i = 0; i < vertices.size(); i++) {
-            vector<int> lst;
-            for (int j = 0; j < edges.size(); j++) {
-                if (vertices[i] == edges[j][0]) {
-                    if (!In(edges[j][1], lst) && edges[j][1] != edges[j][0])
-                        lst.push_back(edges[j][1]);
-                }
-                else if (vertices[i] == edges[j][1])
-                    if (!In(edges[j][0], lst) && edges[j][0] != edges[j][1])
-                        lst.push_back(edges[j][0]);
-            }
-
-            if (lst.size() < min_degree)
-                min_degree = lst.size();
-            if (lst.size() > max_degree)
-                max_degree = lst.size();
-            adjacencies.push_back(lst);
-        }
-    }
-
-    Graph(){}
-
-    vector<int> adj(int vertex) {
-        for (int i = 0; i < vertices.size(); i++) {
-            if (vertices[i] == vertex)
-                return adjacencies[i];
-        }
-    }
-
-    vector<int> add_isolated_vertices(int vertex) {
-        vertices.push_back(vertex);
-        vector<int> empty_lst;
-        adjacencies.push_back(empty_lst);
-        min_degree = 0;
-        colors.push_back("white");
-    }
-
-    string getColor(int vertex) {
-        for (int i = 0; i < vertices.size(); i++) {
-            if (vertices[i] == vertex)
-                return colors[i];
-        }
-    }
-
-    void setColor(int vertex, const string& color) {
-        for (int i = 0; i < vertices.size(); i++) {
-            if (vertices[i] == vertex) {
-                colors[i] = color;
-                return;
-            }
-        }
-    }
-
-    void setAllColor(const string& color) {
-        for (int i = 0; i < vertices.size(); i++)
-            colors[i] = color;
-    }
-};*/
-
-
 class Graph
 {
 protected:
     int order;
     vector<pair<int, int>> edges;
-    vector< vector<int>> neighbors;
     vector<string> colors;
 
 public:
+    vector< vector<int>> neighbors;
     int max_degree;
     int min_degree;
 
@@ -179,9 +86,9 @@ public:
     }
 
     vector<int> vertices() const {
-        vector<int> ret;
+        vector<int> ret(order, 0);
         for (int i = 0; i < order; i++)
-            ret.push_back(i);
+            ret[i] = i;
 
         return ret;
     }
@@ -227,13 +134,12 @@ bool forcing_rule(Graph& G, int node0, const vector<int>& b) {
         return true;
 
     /* For every blue node node1 that is adjancent to node0, if node0 is the only white node adjacent to node1, then the forcing rule applies, and node0 will be forced blue in the next iteration, therefore return True. If this doesn't apply for any blue node then node0 won't be forced blue, therefore return False. */
-    vector<int> adj_node0 = G.adj(node0);
+
     for (int i = 0; i < b.size(); i++)
-        if (In(b[i], adj_node0)) {
+        if (In(b[i], G.neighbors[node0])) {
             bool works = true;
-            vector<int> lst = G.adj(b[i]);
-            for (int j = 0; j < lst.size(); j++)
-                if (G.getColor(lst[j]) == "white" && lst[j] != node0) {
+            for (int j = 0; j < G.neighbors[b[i]].size(); j++)
+                if (G.getColor(G.neighbors[b[i]][j]) == "white" && G.neighbors[b[i]][j] != node0) {
                     works = false;
                     break;
                 }
@@ -291,14 +197,16 @@ returnPair forcing_process(Graph& G, const vector<int>& b, bool (*rule)(Graph&, 
             return { b1, t - 1 };
 
         vector<int> new_b = b1;
-        vector<int> explored = b1;
+        vector<bool> explored(G.get_order(), false);
+        for (int i = 0; i < b1.size(); i++)
+            explored[b1[i]] = true;
+
         for (int i = 0; i < b1.size(); i++) {
-            vector<int> lst = G.adj(b1[i]);
-            for (int j = 0; j < lst.size(); j++) {
-                if (!In(lst[j], explored)) {
-                    explored.push_back(lst[j]);
-                    if (rule(G, lst[j], b1))
-                        new_b.push_back(lst[j]);
+            for (int j = 0; j < G.neighbors[b1[i]].size(); j++) {
+                if (!explored[G.neighbors[b1[i]][j]]) {
+                    explored[G.neighbors[b1[i]][j]] = true;
+                    if (rule(G, G.neighbors[b1[i]][j], b1))
+                        new_b.push_back(G.neighbors[b1[i]][j]);
                 }
             }
         }
@@ -315,7 +223,7 @@ returnPair forcing_process(Graph& G, const vector<int>& b, bool (*rule)(Graph&, 
 
 int population_size = 8;
 int num_of_elite_chrom = 1;
-int tournament_selection_size = 4;
+const int tournament_selection_size = 4;
 double mutation_rate = 0.25;
 int min_size, max_size;
 
@@ -332,7 +240,16 @@ public:
         G = G1;
         rule = rule1;
         int k = rand() % (max_size - min_size + 1) + min_size;
-        sample(G.vertices(), genes, k);
+        vector<int> v = G.vertices();
+        sample(v, genes, k);
+        t = 0;
+        throttling_num = throttling_num1;
+    }
+
+    Chromosome(Graph& G1, vector<int>& genes1, bool (*rule1)(Graph&, int, const vector<int>&) = &forcing_rule, bool throttling_num1 = false) {
+        G = G1;
+        rule = rule1;
+        genes = genes1;
         t = 0;
         throttling_num = throttling_num1;
     }
@@ -401,9 +318,8 @@ public:
         int i = num_of_elite_chrom;
 
         while (i < population_size) {
-            Chromosome chromosome1 = GeneticAlgorithm::select_tournament_population(pop, rule)[0];
-            Chromosome chromosome2 = GeneticAlgorithm::select_tournament_population(pop, rule)[0];
-            crossover_pop.chromosomes.push_back(GeneticAlgorithm::crossover_chromosomes(chromosome1, chromosome2, G, rule, throttling_num));
+            vector<int> genes1 = GeneticAlgorithm::select_tournament_population(pop), genes2 = GeneticAlgorithm::select_tournament_population(pop);
+            crossover_pop.chromosomes.push_back(GeneticAlgorithm::crossover_chromosomes(genes1, genes2, G, rule, throttling_num));
             i += 1;
         }
         return crossover_pop;
@@ -417,14 +333,14 @@ public:
     }
 
 
-    static Chromosome crossover_chromosomes(const Chromosome& chromosome1, const Chromosome& chromosome2, Graph& G, bool (*rule)(Graph&, int, const vector<int>&) = &forcing_rule, bool throttling_num = false) {
-        Chromosome crossover_chrom(G, rule, throttling_num);
-        crossover_chrom.genes = {};
-        int n1 = chromosome1.genes.size(), n2 = chromosome2.genes.size();
+    static Chromosome crossover_chromosomes(vector<int>& genes1, vector<int>& genes2, Graph& G, bool (*rule)(Graph&, int, const vector<int>&) = &forcing_rule, bool throttling_num = false) {
+        vector<int> genes = {};
+        Chromosome crossover_chrom(G, genes, rule, throttling_num);
+        int n1 = genes1.size(), n2 = genes2.size();
         int k = rand() % (1 + max(n1, n2) - min(n1, n2)) + min(n1, n2);
 
-        vector<int> combined_genes = chromosome1.genes;
-        combined_genes.insert(combined_genes.end(), chromosome2.genes.begin(), chromosome2.genes.end());
+        vector<int> combined_genes = genes1;
+        combined_genes.insert(combined_genes.end(), genes2.begin(), genes2.end());
 
         sample(combined_genes, crossover_chrom.genes, k);
         sort(crossover_chrom.genes.begin(), crossover_chrom.genes.end());
@@ -448,20 +364,24 @@ public:
     }
 
 
-    static vector<Chromosome> select_tournament_population(const Population& pop, bool (*rule)(Graph&, int, const vector<int>&) = &forcing_rule) {
-        vector<Chromosome> tournament_pop;
+    static vector<int> select_tournament_population(const Population& pop) {
+        int tournament_pop[tournament_selection_size];
         int i = 0;
         while (i < tournament_selection_size) {
-            tournament_pop.push_back(pop.chromosomes[rand() % population_size]);
+            tournament_pop[i] = rand() % population_size;
             i += 1;
         }
-        sort(tournament_pop.begin(), tournament_pop.end(),
-            [](const Chromosome& a, const Chromosome& b) -> bool
-            {
-                return a.fitness > b.fitness;
-            });
+        
+        int top = -99999999;
+        int top_chrom = 0;
+        for (int i = 0; i < tournament_selection_size; i++) {
+            if (pop.chromosomes[tournament_pop[i]].fitness > top) {
+                top = pop.chromosomes[tournament_pop[i]].fitness;
+                top_chrom = tournament_pop[i];
+            }
+        }
 
-        return tournament_pop;
+        return pop.chromosomes[top_chrom].genes;
     }
 };
 
@@ -524,7 +444,7 @@ returnTriplet zero_forcing(Graph& G, bool (*rule)(Graph&, int, const vector<int>
 
 
 int main() {
-    Graph G(3, { {0, 2} });
+    Graph G(7, { {0, 2}, {2, 3}, {3, 0}, {1, 5}, {5, 4}, {4, 0}, {2, 6} });
     auto start = high_resolution_clock::now();
     returnTriplet z = zero_forcing(G, forcing_rule);
     auto stop = high_resolution_clock::now();
@@ -535,6 +455,7 @@ int main() {
 
     cout << "[";
     vector<int> lst = z.zero_forcing_set;
+
     for (int i = 0; i < lst.size(); i++) {
         if (i == lst.size() - 1)
             cout << lst[i];
