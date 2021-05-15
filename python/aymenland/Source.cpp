@@ -8,6 +8,7 @@
 #include <time.h>
 #include <chrono>
 #include <utility>
+#include <list>
 using namespace std;
 using namespace std::chrono;
 
@@ -127,6 +128,54 @@ public:
 };
 
 
+bool white_path(Graph& G, int s, int d) {
+    if (s == d)
+        return true;
+
+    int n = G.get_order();
+
+    bool* visited = new bool[n];
+    for (int i = 0; i < n; i++)
+        visited[i] = false;
+
+    list<int> queue;
+    visited[s] = true;
+    queue.push_back(s);
+
+    vector<int>::iterator i;
+
+    while (!queue.empty())
+    {
+        s = queue.front();
+        queue.pop_front();
+
+        // Get all adjacent vertices of the dequeued vertex s
+        // If a adjacent has not been visited, then mark it visited
+        // and enqueue it
+        vector<int> lst = G.adj(s);
+        for (i = lst.begin(); i != lst.end(); ++i)
+        {
+            if (G.getColor(*i) == "blue")
+                continue;
+            // If this adjacent node is the destination node, then
+            // return true
+            if (*i == d)
+                return true;
+
+            // Else, continue to do BFS
+            if (!visited[*i])
+            {
+                visited[*i] = true;
+                queue.push_back(*i);
+            }
+        }
+    }
+
+    // If BFS is complete without visiting d
+    return false;
+}
+
+
 bool forcing_rule(Graph& G, int node0, const vector<int>& b) {
     /* Returns True if, given a graph and a set of blue vertices b, nodes0 will be forced blue in the next iteration. Returns False otherwise. */
 
@@ -167,7 +216,7 @@ bool psd_rule(Graph& G, int node0, const vector<int>& b) {
             bool works = true;
             vector<int> lst = G.adj(b[i]);
             for (int j = 0; j < lst.size(); j++) {
-                if (In(lst[j], adj_node0) && G.getColor(lst[j]) == "white" && lst[j] != node0) {
+                if (G.getColor(lst[j]) == "white" && lst[j] != node0 && white_path(G, node0, lst[j])) {
                     works = false;
                     break;
                 }
@@ -414,7 +463,7 @@ returnTriplet zero_forcing(Graph& G, bool (*rule)(Graph&, int, const vector<int>
 
     max_size = n;
     min_size = e / n;
-    double target_gen = max(37.708025691857216 * n + 0.6188752011422203 * e - 255.01828721571377, 30.0);
+    double target_gen = 200;//max(37.708025691857216 * n + 0.6188752011422203 * e - 255.01828721571377, 30.0);
     srand(time(NULL));
 
     Population population(population_size, G, rule, throttling_num);
