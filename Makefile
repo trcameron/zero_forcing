@@ -59,8 +59,8 @@ rand_zf_test_time: zf_test_time
 #heuristic:
 #	$(NAUTY)/geng $(SIZE) | $(PYTHON) python/heuristic.py
 	
-py_wavefront:
-	$(NAUTY)/geng $(N) | $(PYTHON) python/wavefront.py
+aymen_converter:
+	$(NAUTY)/geng $(N) | $(PYTHON) python/aymen_converter.py
 	
 uninstall:
 	@rm -f zf_test_corr

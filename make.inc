@@ -6,7 +6,7 @@ LIBFORMAT = static_pic
 CPLEXDIR = /Applications/CPLEX_Studio201/cplex
 CONCERTDIR = /Applications/CPLEX_Studio201/concert
 NAUTY = /usr/local/Cellar/nauty/27r1/bin
-PYTHON = python3.7
+PYTHON = python3
 N = 3
 NUM = 10
 # ---------------------------------------------------------------------
