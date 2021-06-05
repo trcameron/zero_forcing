@@ -9,6 +9,7 @@
 #include <chrono>
 #include <utility>
 #include <list>
+#include <fstream>
 using namespace std;
 using namespace std::chrono;
 
@@ -35,7 +36,7 @@ class Graph
 protected:
     int order;
     vector<pair<int, int>> edges;
-    vector<string> colors;
+    vector<bool> colors;
 
 public:
     vector< vector<int>> neighbors;
@@ -113,15 +114,15 @@ public:
         return neighbors[node].size();
     }
 
-    void setColor(int node, const string& color) {
+    void setColor(int node, const bool& color) {
         colors[node] = color;
     }
 
-    string getColor(int node) const {
+    bool getColor(int node) const {
         return colors[node];
     }
 
-    void setAllColor(const string& color) {
+    void setAllColor(const bool& color) {
         for (int i = 0; i < order; i++)
             colors[i] = color;
     }
@@ -155,7 +156,7 @@ bool white_path(Graph& G, int s, int d) {
         vector<int> lst = G.adj(s);
         for (i = lst.begin(); i != lst.end(); ++i)
         {
-            if (G.getColor(*i) == "blue")
+            if (G.getColor(*i))
                 continue;
             // If this adjacent node is the destination node, then
             // return true
@@ -179,7 +180,7 @@ bool white_path(Graph& G, int s, int d) {
 bool forcing_rule(Graph& G, int node0, const vector<int>& b) {
     /* Returns True if, given a graph and a set of blue vertices b, nodes0 will be forced blue in the next iteration. Returns False otherwise. */
 
-    if (G.getColor(node0) == "blue")
+    if (G.getColor(node0))
         return true;
 
     /* For every blue node node1 that is adjancent to node0, if node0 is the only white node adjacent to node1, then the forcing rule applies, and node0 will be forced blue in the next iteration, therefore return True. If this doesn't apply for any blue node then node0 won't be forced blue, therefore return False. */
@@ -188,7 +189,7 @@ bool forcing_rule(Graph& G, int node0, const vector<int>& b) {
         if (In(b[i], G.neighbors[node0])) {
             bool works = true;
             for (int j = 0; j < G.neighbors[b[i]].size(); j++)
-                if (G.getColor(G.neighbors[b[i]][j]) == "white" && G.neighbors[b[i]][j] != node0) {
+                if (!G.getColor(G.neighbors[b[i]][j]) && G.neighbors[b[i]][j] != node0) {
                     works = false;
                     break;
                 }
@@ -206,7 +207,7 @@ bool psd_rule(Graph& G, int node0, const vector<int>& b) {
     using the PSD forcing rule.
     Returns False otherwise. */
 
-    if (G.getColor(node0) == "blue")
+    if (G.getColor(node0))
         return true;
 
     /* For every blue node node1 that is adjancent to node0, if node0 is not adjancent to any other white vertex adjacent to node1, then node0 will be forced in the next iteration, therefore return True. If this doesn't apply for any blue node, then node0 won't be forced blue, therefore return False. */
@@ -216,7 +217,7 @@ bool psd_rule(Graph& G, int node0, const vector<int>& b) {
             bool works = true;
             vector<int> lst = G.adj(b[i]);
             for (int j = 0; j < lst.size(); j++) {
-                if (G.getColor(lst[j]) == "white" && lst[j] != node0 && white_path(G, node0, lst[j])) {
+                if (!G.getColor(lst[j]) && lst[j] != node0 && white_path(G, node0, lst[j])) {
                     works = false;
                     break;
                 }
@@ -238,9 +239,8 @@ returnPair forcing_process(Graph& G, const vector<int>& b, bool (*rule)(Graph&, 
     /* Applies the forcing rule given to the given graph with the given initial set of blue vertices b. Once the forcing process is done, returns the final set of blue vertices. */
     vector<int> b1 = b;
     while (true) {
-        string blue = "blue";
         for (int i = 0; i < b1.size(); i++)
-            G.setColor(b1[i], blue);
+            G.setColor(b1[i], true);
 
         if (b1.size() == G.get_order())
             return { b1, t - 1 };
@@ -304,8 +304,7 @@ public:
     }
 
     int get_fitness() {
-        string white = "white";
-        G.setAllColor(white);
+        G.setAllColor(false);
 
         returnPair res = forcing_process(G, genes, rule);
         int forcing = res.vertices.size();
@@ -318,7 +317,7 @@ public:
         else
             result = 9999999 - t - pow(genes.size() + 2, 4);
 
-        G.setAllColor(white);
+        G.setAllColor(false);
 
         return result;
     }
@@ -452,6 +451,8 @@ struct returnTriplet {
     int propagation;
     vector<int> zero_forcing_set;
     int throttling_num;
+
+    // int reached_target;
 };
 returnTriplet zero_forcing(Graph& G, bool (*rule)(Graph&, int, const vector<int>&) = &forcing_rule, bool throttling_num = false) {
     /* Applies a Genetic Algorithm to the given graph in order to find its minimal zero-forcing set, and therefore zero-forcing number. Returns the zero-forcing number, propagation number, and zero-forcing set */
@@ -463,7 +464,7 @@ returnTriplet zero_forcing(Graph& G, bool (*rule)(Graph&, int, const vector<int>
 
     max_size = n;
     min_size = e / n;
-    double target_gen = 200;//max(37.708025691857216 * n + 0.6188752011422203 * e - 255.01828721571377, 30.0);
+    double target_gen = max(38.0 * n - 250, 30.0); // 500;
     srand(time(NULL));
 
     Population population(population_size, G, rule, throttling_num);
@@ -477,6 +478,9 @@ returnTriplet zero_forcing(Graph& G, bool (*rule)(Graph&, int, const vector<int>
     //print_population(population, 0);
     int generation_number = 1;
 
+    /*int reached_target = 1;
+    vector<int> oldgenes = population.chromosomes[0].genes;*/
+
     while (generation_number <= target_gen) {
         population = GeneticAlgorithm::evolve(population, G, rule, throttling_num);
         sort(population.chromosomes.begin(), population.chromosomes.end(),
@@ -486,14 +490,43 @@ returnTriplet zero_forcing(Graph& G, bool (*rule)(Graph&, int, const vector<int>
             });
         //print_population(population, generation_number);
         generation_number++;
+
+        /*reached_target++;
+        if (population.chromosomes[0].genes != oldgenes)
+            reached_target = 0;
+        oldgenes = population.chromosomes[0].genes;*/
     }
 
-    return { (int)population.chromosomes[0].genes.size(), population.chromosomes[0].t, population.chromosomes[0].genes, (int)population.chromosomes[0].genes.size() + population.chromosomes[0].t };
+    return { (int)population.chromosomes[0].genes.size(), population.chromosomes[0].t, population.chromosomes[0].genes, (int)population.chromosomes[0].genes.size() + population.chromosomes[0].t }; //, 501 - reached_target};
 }
 
 
 int main() {
-    Graph G(7, { {0, 2}, {2, 3}, {3, 0}, {1, 5}, {5, 4}, {4, 0}, {2, 6} });
+    
+    // Data Gathering
+    /*fstream file("file.txt");
+    fstream out("output.txt");
+    int n1(0), n2(0);
+    int order = 0;
+
+    while (file >> order){
+        cout << order << endl;
+        vector< pair<int, int>> edges;
+        while (true) {
+            file >> n1;
+            if (n1 == -1)
+                break;
+            file >> n2;
+            edges.push_back({ n1, n2 });
+        }
+        Graph G(order, edges);
+
+        returnTriplet z = zero_forcing(G, forcing_rule);
+        out << order << " " << G.get_edges().size() << " " << z.reached_target << endl;
+    }*/
+   
+    
+    Graph G(17, { {0, 1}, {1, 2}, {2, 3}, {3, 4}, {4, 5}, {5, 6}, {6, 7}, {7, 8}, {8, 9}, {9, 10}, {10, 11}, {11, 12}, {12, 13}, {13, 14} });
     auto start = high_resolution_clock::now();
     returnTriplet z = zero_forcing(G, forcing_rule);
     auto stop = high_resolution_clock::now();
