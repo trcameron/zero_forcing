@@ -270,7 +270,7 @@ returnPair forcing_process(Graph& G, const vector<int>& b, bool (*rule)(Graph&, 
 
 // Genetic Algorithm Skeleton
 
-int population_size = 8;
+int population_size = 9;
 int num_of_elite_chrom = 1;
 const int tournament_selection_size = 4;
 double mutation_rate = 0.25;
@@ -285,12 +285,16 @@ public:
     int t;
     bool throttling_num;
 
-    Chromosome(Graph& G1, bool (*rule1)(Graph&, int, const vector<int>&) = &forcing_rule, bool throttling_num1 = false) {
+    Chromosome(Graph& G1, bool (*rule1)(Graph&, int, const vector<int>&) = &forcing_rule, bool throttling_num1 = false, float p = 0.5) {
         G = G1;
         rule = rule1;
-        int k = rand() % (max_size - min_size + 1) + min_size;
+
         vector<int> v = G.vertices();
-        sample(v, genes, k);
+         for (int i = 0; i < G1.get_order(); i++) {
+            if ((float)rand() / RAND_MAX < p)
+                genes.push_back(v[i]);
+         }
+        
         t = 0;
         throttling_num = throttling_num1;
     }
@@ -342,8 +346,9 @@ public:
     vector<Chromosome> chromosomes;
 
     Population(int size, Graph& G1, bool (*rule1)(Graph&, int, const vector<int>&) = &forcing_rule, bool throttling_num = false) {
-        for (int i = 0; i < size; i++)
-            chromosomes.push_back(Chromosome(G1, rule1, throttling_num));
+        for (int i = 0; i < size; i++) {
+            chromosomes.push_back(Chromosome(G1, rule1, throttling_num, (i + 1) * 0.1));
+        }
     }
 };
 
@@ -383,16 +388,17 @@ public:
 
     static Chromosome crossover_chromosomes(vector<int>& genes1, vector<int>& genes2, Graph& G, bool (*rule)(Graph&, int, const vector<int>&) = &forcing_rule, bool throttling_num = false) {
         vector<int> genes = {};
-        Chromosome crossover_chrom(G, genes, rule, throttling_num);
         int n1 = genes1.size(), n2 = genes2.size();
         int k = rand() % (1 + max(n1, n2) - min(n1, n2)) + min(n1, n2);
 
         vector<int> combined_genes = genes1;
         combined_genes.insert(combined_genes.end(), genes2.begin(), genes2.end());
 
-        sample(combined_genes, crossover_chrom.genes, k);
-        sort(crossover_chrom.genes.begin(), crossover_chrom.genes.end());
-        crossover_chrom.genes.erase(unique(crossover_chrom.genes.begin(), crossover_chrom.genes.end()), crossover_chrom.genes.end());
+        sample(combined_genes, genes, k);
+        sort(genes.begin(), genes.end());
+        genes.erase(unique(genes.begin(), genes.end()), genes.end());
+
+        Chromosome crossover_chrom(G, genes, rule, throttling_num);
 
         return crossover_chrom;
     }
@@ -402,7 +408,6 @@ public:
         if ((rand() % 1000) / 1000.0 < mutation_rate) {
             vector<int> lst = G.vertices();
             //lst.insert(lst.end(), chromosome.genes.begin(), chromosome.genes.end());   add this line to make the chromosome's genes have twice the chance of being picked
-            int n = lst.size();
             int k = rand() % (max_size - min_size + 1) + min_size;
             chromosome.genes = {};
             sample(lst, chromosome.genes, k);
