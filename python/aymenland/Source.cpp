@@ -11,6 +11,9 @@
 #include <fstream>
 #include <bitset>
 #include <unordered_map>
+
+#include <set>
+#include <stack>
 using namespace std;
 using namespace std::chrono;
 
@@ -711,6 +714,8 @@ returnTriplet zero_forcing(Graph& G, bool (*rule)(Graph&, int, const Bitset&) = 
             reached_target = 0;
         oldgenes = population.chromosomes[0].genes;*/
     }
+    unordered_map<bitset<M>, int> new_map;
+    fitness_map = new_map;
 
     return { (int)population.chromosomes[0].genes.bit.count(), population.chromosomes[0].t, population.chromosomes[0].genes.convert(), (int)population.chromosomes[0].genes.bit.count() + population.chromosomes[0].t }; //, 501 - reached_target};
 }
@@ -777,12 +782,15 @@ int main() {
     }
     cout << "Mismatch: " << fails << endl;*/
     
+    
     Graph G(17, { {0, 1}, {1, 2}, {2, 3}, {3, 4}, {4, 5}, {5, 6}, {6, 7}, {7, 8}, {8, 9}, {9, 10}, {10, 11}, {11, 12}, {12, 13}, {13, 14} });
+    Graph G1(17, { {0, 1}, {1, 2}, {2, 3}, {3, 4}, {4, 5}, {5, 6}, {6, 7}, {7, 8}, {8, 9}, {9, 10}, {10, 11}, {11, 12}, {12, 13} });
     auto start = high_resolution_clock::now();
     returnTriplet z = zero_forcing(G, forcing_rule);
     auto stop = high_resolution_clock::now();
     auto duration = duration_cast<microseconds>(stop - start);
     cout << duration.count() / 1000000.0 << endl;
+    returnTriplet z1 = zero_forcing(G1, forcing_rule);
 
     cout << "1. Zero Forcing number: " << z.zero_forcing_num << "  |  Propagation number: " << z.propagation << "  |  Zero Forcing Set: ";
 
@@ -796,6 +804,20 @@ int main() {
             cout << lst[i] << ", ";
     }
     cout << "]  |  Throttling Number: " << z.throttling_num << endl << /*"2. Wavefront: " << zf_wave(G) <<*/ endl;
+
+
+    cout << "1. Zero Forcing number: " << z1.zero_forcing_num << "  |  Propagation number: " << z1.propagation << "  |  Zero Forcing Set: ";
+
+    cout << "[";
+    lst = z1.zero_forcing_set;
+
+    for (int i = 0; i < lst.size(); i++) {
+        if (i == lst.size() - 1)
+            cout << lst[i];
+        else
+            cout << lst[i] << ", ";
+    }
+    cout << "]  |  Throttling Number: " << z1.throttling_num << endl << /*"2. Wavefront: " << zf_wave(G) <<*/ endl;
 
     return 0;
 }
