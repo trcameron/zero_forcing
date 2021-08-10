@@ -1,35 +1,27 @@
 #####################################################
-#   Restricted Numerical Range Make Include File    #
+#   Zero-Forcing Make Include File    				#
 #####################################################
-SYSTEM = x86-64_osx
-LIBFORMAT = static_pic
-CPLEXDIR = /Applications/CPLEX_Studio201/cplex
-CONCERTDIR = /Applications/CPLEX_Studio201/concert
+BOOSTDIR = /usr/local/Cellar/boost/1.76.0
+GUROBIDIR = /Library/gurobi912/mac64
 NAUTY = /usr/local/Cellar/nauty/27r1/bin
-PYTHON = python3
-N = 3
-NUM = 10
+ORDER = 3
 # ---------------------------------------------------------------------
 # Compiler selection 
 # --------------------------------------------------------------------- 
-CCC = g++ -std=gnu++2a
+CCC = g++ -std=c++11
 # ---------------------------------------------------------------------
 # Compiler options 
 # ---------------------------------------------------------------------
-CCOPT = -Ofast -march=native -mtune=native
+CCOPT =
 # ---------------------------------------------------------------------
-# Link options and libraries
+# Include directories
 # ---------------------------------------------------------------------
-CPLEXBINDIR = $(CPLEXDIR)/bin/$(BINDIST)
-
-CPLEXLIBDIR = $(CPLEXDIR)/lib/$(SYSTEM)/$(LIBFORMAT)
-CONCERTLIBDIR = $(CONCERTDIR)/lib/$(SYSTEM)/$(LIBFORMAT)
-
-CCLNDIRS  = -L$(CPLEXLIBDIR) -L$(CONCERTLIBDIR) 
-CCLNFLAGS = -lconcert -lilocplex -lcplex -lm -lpthread -ldl
-
-CONCERTINCDIR = $(CONCERTDIR)/include
-CPLEXINCDIR = $(CPLEXDIR)/include
+BOOSTINCDIR = $(BOOSTDIR)/include
+GUROBILIBDIR = $(GUROBIDIR)/lib
+GUROBIINCDIR = $(GUROBIDIR)/include
 LOCALINCDIR = $(PWD)/cpp/headers
-
-CCFLAGS = $(CCOPT) -I$(CPLEXINCDIR) -I$(CONCERTINCDIR) -I$(LOCALINCDIR)
+# ---------------------------------------------------------------------
+# Link and include flags
+# ---------------------------------------------------------------------
+CCLNFLAGS = -L$(GUROBILIBDIR) -lgurobi91 -lgurobi_c++
+CCINCFLAGS = -I$(BOOSTINCDIR) -I$(GUROBIINCDIR) -I$(LOCALINCDIR)

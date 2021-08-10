@@ -1,68 +1,23 @@
 #####################################################
-#			Zero Forcing Make File					#
+#   Zero-Forcing Make File    						#
 #####################################################
 include make.inc
 
-boost_graph:
-	g++ -std=gnu++2a cpp/boost_graph.cpp -o boost_graph -I boost_1_75_0
+install_cubic_test:
+	$(CCC) $(CCOPT) $(CCINCFLAGS) $(CCLNFLAGS) -o cubic_test cpp/edg.cpp cpp/wavefront.cpp cpp/genetic_algorithm.cpp cpp/cubic_test.cpp
 	
-heuristic:
-	$(CCC) $(CCFLAGS) $(CCLNDIRS) -o heuristic cpp/zero_forcing.cpp cpp/heuristic.cpp $(CCLNFLAGS)
+install_watts_strogatz_test:
+	$(CCC) $(CCOPT) $(CCINCFLAGS) $(CCLNFLAGS) -o watts_strogatz_test cpp/edg.cpp cpp/wavefront.cpp cpp/genetic_algorithm.cpp cpp/watts_strogatz_test.cpp
 	
-run_heuristic: heuristic
-	@echo "Min Ratio, Avg Ratio, Max Ratio"
-	@$(NAUTY)/geng $(N) -q | ./heuristic
+install_star_test:
+	$(CCC) $(CCOPT) $(CCINCFLAGS) $(CCLNFLAGS) -o star_test cpp/edg.cpp cpp/infection_ip.cpp cpp/genetic_algorithm.cpp cpp/star_test.cpp
+	
+run_all: install_cubic_test install_watts_strogatz_test install_star_test
+	./cubic_test
+	./watts_strogatz_test
+	./star_test
 
-zf_test_corr:
-	$(CCC) $(CCFLAGS) $(CCLNDIRS) -o zf_test_corr cpp/zero_forcing.cpp cpp/zf_test_corr.cpp $(CCLNFLAGS)
-	
-zf_test_time:
-	$(CCC) $(CCFLAGS) $(CCLNDIRS) -o zf_test_time cpp/zero_forcing.cpp cpp/zf_test_time.cpp $(CCLNFLAGS)
-	
-all_zf_test_corr: zf_test_corr
-	@echo "Wave % Correct, GA % Correct"
-	@$(NAUTY)/geng $(N) -q | ./zf_test_corr
-	
-rand_zf_test_corr: zf_test_corr
-	@echo "Wave % Correct, GA % Correct"
-	@$(NAUTY)/genrang $(N) $(NUM) -g -P20/100 | ./zf_test_corr
-	@$(NAUTY)/genrang $(N) $(NUM) -g -P30/100 | ./zf_test_corr
-	@$(NAUTY)/genrang $(N) $(NUM) -g -P40/100 | ./zf_test_corr
-	@$(NAUTY)/genrang $(N) $(NUM) -g -P50/100 | ./zf_test_corr
-	@$(NAUTY)/genrang $(N) $(NUM) -g -P60/100 | ./zf_test_corr
-	@$(NAUTY)/genrang $(N) $(NUM) -g -P70/100 | ./zf_test_corr
-	@$(NAUTY)/genrang $(N) $(NUM) -g -P80/100 | ./zf_test_corr
-	
-all_zf_test_time: zf_test_time
-	@echo "Avg IP Time, Avg Wave Time, Avg GA Time"
-	@$(NAUTY)/geng $(N) -q | ./zf_test_time
-	
-rand_zf_test_time: zf_test_time
-	@echo "Avg IP Time, Avg Wave Time, Avg GA Time"
-	@$(NAUTY)/genrang $(N) $(NUM) -g -P20/100 | ./zf_test_time
-	@$(NAUTY)/genrang $(N) $(NUM) -g -P30/100 | ./zf_test_time
-	@$(NAUTY)/genrang $(N) $(NUM) -g -P40/100 | ./zf_test_time
-	@$(NAUTY)/genrang $(N) $(NUM) -g -P50/100 | ./zf_test_time
-	@$(NAUTY)/genrang $(N) $(NUM) -g -P60/100 | ./zf_test_time
-	@$(NAUTY)/genrang $(N) $(NUM) -g -P70/100 | ./zf_test_time
-	@$(NAUTY)/genrang $(N) $(NUM) -g -P80/100 | ./zf_test_time
-	
-#run_rand_test:
-#	$(PYTHON) python/rand_test.py
-	
-#run_small_test:
-#	$(PYTHON) python/small_test.py
-	
-#zf_test:
-#	$(NAUTY)/geng $(SIZE) | $(PYTHON) python/zf_test.py
-	
-#heuristic:
-#	$(NAUTY)/geng $(SIZE) | $(PYTHON) python/heuristic.py
-	
-aymen_converter:
-	$(NAUTY)/geng $(N) | $(PYTHON) python/aymen_converter.py
-	
 uninstall:
-	@rm -f zf_test_corr
-	@rm -f zf_test_time
-	@rm -f heuristic
+	@rm -f cubic_test
+	@rm -f watts_strogatz_test
+	@rm -f star_test
