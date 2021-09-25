@@ -3,7 +3,7 @@
 #####################################################
 BOOSTDIR = /usr/local/Cellar/boost/1.76.0
 GUROBIDIR = /Library/gurobi912/mac64
-NAUTY = /usr/local/Cellar/nauty/27r1/bin
+NAUTY = /usr/local/Cellar/nauty/2.7r3/bin
 ORDER = 3
 # ---------------------------------------------------------------------
 # Compiler selection 

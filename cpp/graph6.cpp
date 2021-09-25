@@ -1,7 +1,10 @@
 #include <graph6.hpp>
+#include <iostream>
+#include <fstream>
 using namespace std;
 using namespace wf;
 using namespace ip;
+using namespace ga;
 /* read graph6 for wavefront */
 vector<wf::node> read_graph6_wf(const string &line)
 {
@@ -102,9 +105,9 @@ ip::graph read_graph6_ip(const string &line)
 		}
 	}
 	// build graph
-	fcip::graph our_graph;
-	fcip::node blank_node;
-	vector<fcip::node> nodes(n,blank_node);
+	ip::graph our_graph;
+	ip::node blank_node;
+	vector<ip::node> nodes(n,blank_node);
 	our_graph.nodes = nodes;
 	int k = 0;
 	for(int j=1; j<n; j++)
