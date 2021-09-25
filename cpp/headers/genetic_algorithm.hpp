@@ -151,6 +151,8 @@ bool white_path(Graph& G, int s, int d);
 bool std_rule(Graph& G, int node0, const Bitset& b);
 /* psd_rule */
 bool psd_rule(Graph& G, int node0, const Bitset& b);
+/* skew_rule */
+bool skew_rule(Graph& G, int node0, const Bitset& b);
 /* returnPair structure */
 struct returnPair {
     Bitset vertices;
@@ -158,6 +160,8 @@ struct returnPair {
 };
 /* forcing_process */
 returnPair forcing_process(Graph& G, const Bitset& b, bool (*rule)(Graph&, int, const Bitset&) = &std_rule, int t = 1);
+/* heuristic */
+returnPair heuristic(Graph&G, bool (*rule)(Graph&, int, const Bitset&) = &std_rule);
 /* returnQuad structure */
 struct returnQuad {
     int zero_forcing_num;

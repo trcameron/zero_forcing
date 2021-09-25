@@ -176,6 +176,30 @@ returnPair ga::forcing_process(Graph& G, const Bitset& b, bool (*rule)(Graph&, i
         ++t;
     }
 }
+/* heuristic */
+returnPair ga::heuristic(Graph& G, bool (*rule)(Graph&, int, const Bitset&)){
+	Bitset blue(G.get_order()), new_blue(G.get_order());
+	returnPair closure, new_closure;
+	
+	blue.bit.set(0);
+	closure = forcing_process(G,blue,rule);
+
+	while(closure.vertices.size < G.get_order()){
+		for(int i=0; i<G.get_order(); i++){									// loop over all vertices
+			if(!blue.bit[i]){												// if this vertex is not currently set
+				new_blue.bit.set(i);
+				new_closure = forcing_process(G,new_blue,rule);
+			
+				if(new_closure.vertices.size > closure.vertices.size){		// if adding this vertex results in a larger closure
+					blue = new_blue;												// update blue to new_blue and closure to new_closure
+					closure = new_closure;
+				}
+			}
+		}
+		new_blue = blue;													// reset new_blue to blue for next round of iterations
+	}
+	return {blue,closure.propagation};										// return blue and propagation time?
+}
 // Genetic Algorithm Skeleton
 const int population_size = 9;
 const int num_of_elite_chrom = 1;
@@ -232,7 +256,7 @@ public:
             result = INT_MAX - t - genes.bit.count();
         else
             // result = 9999999 - t - pow(genes.bit.count() + 2, 4);
-			result = INT_MAX - genes.bit.count();
+			result = INT_MAX - t - pow(genes.bit.count()+2,4);
 
         G.setAllColor(false);
 
