@@ -42,6 +42,21 @@ struct Bitset {
     bool operator==(const Bitset& rhs) const {
         return bit == rhs.bit && size == rhs.size;
     }
+
+    bool operator!=(const Bitset& rhs) const {
+        return !(*this == rhs);
+    }
+
+    friend ostream& operator<<(ostream& os, const Bitset& b) {
+        cout << "[";
+        for (int i = 0; i < b.size; i++) {
+            if (!b.bit[i])
+                continue;
+            cout << i << ", ";
+        }
+        cout << "]";
+        return os;
+    }
 };
 /* Bitset operator */
 Bitset operator| (const Bitset& lhs, const Bitset& rhs);
@@ -161,7 +176,7 @@ struct returnPair {
 /* forcing_process */
 returnPair forcing_process(Graph& G, const Bitset& b, bool (*rule)(Graph&, int, const Bitset&) = &std_rule, int t = 1);
 /* heuristic */
-returnPair heuristic(Graph&G, bool (*rule)(Graph&, int, const Bitset&) = &std_rule);
+Bitset heuristic(Graph&G, bool (*rule)(Graph&, int, const Bitset&) = &std_rule);
 /* returnQuad structure */
 struct returnQuad {
     int zero_forcing_num;
